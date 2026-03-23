@@ -1,5 +1,4 @@
-import Header from "../components/Header";
-
+import Calendar from "../components/Calendar";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -8,13 +7,14 @@ export default function Home() {
   const [tasks, setTasks] = useState([]); // lista de tarefas
   const [titulo, setTitulo] = useState(""); // input de texto
   const [prioridade, setPrioridade] = useState("media"); // select
+  const [data, setData] = useState("");
   const [filtro, setFiltro] = useState("todas"); // filtro atual
   const [dark, setDark] = useState(false); // tema
 
   // 📦 CARREGAR dados ao iniciar (equivalente ao loadTasks do seu JS antigo)
   useEffect(() => {
-    const data = localStorage.getItem("tasks");
-    if (data) setTasks(JSON.parse(data));
+    const storedTasks = localStorage.getItem("tasks");
+    if (storedTasks) setTasks(JSON.parse(storedTasks));
 
     const tema = localStorage.getItem("tema");
     if (tema === "dark") setDark(true);
@@ -40,12 +40,15 @@ export default function Home() {
   function addTask(e) {
     e.preventDefault(); // impede reload da página
 
-    if (!titulo.trim()) return alert("Digite um título");
+    if (!titulo.trim() || !data) {
+      return alert("Escolha um título e data");
+    }
 
     const nova = {
       id: Date.now(), // id único
       titulo,
       prioridade,
+      data,
       concluida: false
     };
 
@@ -55,6 +58,7 @@ export default function Home() {
     // limpa campos
     setTitulo("");
     setPrioridade("media");
+    setData("");
   }
 
   // ✔️ MARCAR COMO CONCLUÍDA
@@ -122,6 +126,12 @@ export default function Home() {
               placeholder="Título"
             />
 
+            <input 
+            type="date"
+            value={data}
+            onChange={e => setData(e.target.value)}
+            />
+
             {/* select controlado */}
             <select
               value={prioridade}
@@ -158,10 +168,14 @@ export default function Home() {
               <li
                 key={task.id}
                 onClick={() => toggleTask(task.id)}
-                className={task.concluida ? "feito" : ""}
+                className={`prioridade-${task.prioridade} ${task.concluida ? "feito" : ""}`}
               >
                 {/* texto da tarefa */}
-                {task.titulo} ({task.prioridade})
+                <div className="task-content">
+                  <strong>{task.titulo}</strong>
+                    <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
+                  <span>{task.prioridade}</span>
+                </div>
 
                 {/* ✏️ EDITAR */}
                 <button onClick={(e) => {
@@ -184,11 +198,11 @@ export default function Home() {
           </ul>
         </section>
       </main>
-
+<Calendar tasks={tasks}/>
       {/* 🔻 FOOTER */}
       <footer>
         <p>Feito por Leandro</p>
       </footer>
     </>
   );
-}
+} 
