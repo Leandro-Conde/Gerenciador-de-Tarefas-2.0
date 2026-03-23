@@ -72,6 +72,26 @@ li {
     color: var(--letra-dois);
     text-align: center;
 }
+.menu {
+    padding: 10px;
+    margin: 10px;
+}
+
+.sidebar {
+    position: fixed;
+    display: flex;
+    gap: 10px;
+    left: 0;
+    top: 0;
+    padding: 20px;
+    width: 200px;
+    height: 100vh;
+    background: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
 
 .dark > .head{
     /*border: 2px dashed black;*/
@@ -106,6 +126,7 @@ button {
     color: white;
     border: none;
     cursor: pointer;
+    margin: 10px;
 }
 
 /*Lista*/

@@ -7,9 +7,11 @@ export default function Home() {
   const [tasks, setTasks] = useState([]); // lista de tarefas
   const [titulo, setTitulo] = useState(""); // input de texto
   const [prioridade, setPrioridade] = useState("media"); // select
-  const [data, setData] = useState("");
+  const [data, setData] = useState("");// calendario
   const [filtro, setFiltro] = useState("todas"); // filtro atual
   const [dark, setDark] = useState(false); // tema
+  const [menuAberto, setMenuAberto] = useState(true); //menu lateral/inferior
+  const [pagina, setPagina] = useState("tarefas"); //menu de tarefa
 
   // 📦 CARREGAR dados ao iniciar (equivalente ao loadTasks do seu JS antigo)
   useEffect(() => {
@@ -108,97 +110,119 @@ export default function Home() {
         <button onClick={() => setDark(!dark)}>
           {dark ? "Claro" : "Escuro"}
         </button>
+
+        <button className="menu" onClick={() => setMenuAberto(!menuAberto)}>
+        ☰
+        </button>
       </header>
 
+      {menuAberto && (
+        <aside className="sidebar">
+        <button onClick={() => setPagina("tarefas")}>Tarefas</button>
+        <button onClick={() => setPagina("calendario")}>Calendário</button>
+        <button onClick={() => setPagina("configuração")}>Configurações</button>
+        </aside>
+
+      )}
+
       {/* 🧱 CONTEÚDO PRINCIPAL */}
+
       <main className="container">
 
-        {/* 📥 FORMULÁRIO */}
-        <section>
-          <h2>Nova tarefa</h2>
+  {pagina === "tarefas" && (
+    <>
+      {/* 📥 FORMULÁRIO */}
+      <section>
+        <h2>Nova tarefa</h2>
 
-          <form onSubmit={addTask}>
-            {/* input controlado */}
-            <input
-              type="text"
-              value={titulo}
-              onChange={e => setTitulo(e.target.value)}
-              placeholder="Título"
-            />
+        <form onSubmit={addTask}>
+          <input
+            type="text"
+            value={titulo}
+            onChange={e => setTitulo(e.target.value)}
+            placeholder="Título"
+          />
 
-            <input 
+          <input 
             type="date"
             value={data}
             onChange={e => setData(e.target.value)}
-            />
+          />
 
-            {/* select controlado */}
-            <select
-              value={prioridade}
-              onChange={e => setPrioridade(e.target.value)}
+          <select
+            value={prioridade}
+            onChange={e => setPrioridade(e.target.value)}
+          >
+            <option value="alta">Alta</option>
+            <option value="media">Média</option>
+            <option value="baixa">Baixa</option>
+          </select>
+
+          <button type="submit">Adicionar</button>
+        </form>
+
+        <div>
+          <button onClick={() => setFiltro("todas")}>Todas</button>
+          <button onClick={() => setFiltro("pendentes")}>Pendentes</button>
+          <button onClick={() => setFiltro("concluidas")}>Concluídas</button>
+          <button onClick={clearCompleted}>Limpar</button>
+        </div>
+
+        <p>
+          Total: {total} | Pendentes: {pendentes} | Concluídas: {concluidas}
+        </p>
+      </section>
+
+      {/* 📋 LISTA */}
+      <section>
+        <h2>Suas tarefas</h2>
+
+        <ul>
+          {tarefasFiltradas.map(task => (
+            <li
+              key={task.id}
+              onClick={() => toggleTask(task.id)}
+              className={`prioridade-${task.prioridade} ${task.concluida ? "feito" : ""}`}
             >
-              <option value="alta">Alta</option>
-              <option value="media">Média</option>
-              <option value="baixa">Baixa</option>
-            </select>
+              <div className="task-content">
+                <strong>{task.titulo}</strong>
+                <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
+                <span>{task.prioridade}</span>
+              </div>
 
-            <button type="submit">Adicionar</button>
-          </form>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                const novo = prompt("Editar:");
+                if (novo) editTask(task.id, novo);
+              }}>
+                Editar
+              </button>
 
-          {/* 🎛️ FILTROS */}
-          <div>
-            <button onClick={() => setFiltro("todas")}>Todas</button>
-            <button onClick={() => setFiltro("pendentes")}>Pendentes</button>
-            <button onClick={() => setFiltro("concluidas")}>Concluídas</button>
-            <button onClick={clearCompleted}>Limpar</button>
-          </div>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                deleteTask(task.id);
+              }}>
+                X
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
+    )}
 
-          {/* 📊 CONTADOR */}
-          <p>
-            Total: {total} | Pendentes: {pendentes} | Concluídas: {concluidas}
-          </p>
-        </section>
+  {pagina === "calendario" && (
+    <Calendar tasks={tasks} />
+  )}
 
-        {/* 📋 LISTA */}
-        <section>
-          <h2>Suas tarefas</h2>
+  {pagina === "configurações" && (
+    <h2>Configurações (em breve 😏)</h2>
+  )}
 
-          <ul>
-            {tarefasFiltradas.map(task => (
-              <li
-                key={task.id}
-                onClick={() => toggleTask(task.id)}
-                className={`prioridade-${task.prioridade} ${task.concluida ? "feito" : ""}`}
-              >
-                {/* texto da tarefa */}
-                <div className="task-content">
-                  <strong>{task.titulo}</strong>
-                    <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
-                  <span>{task.prioridade}</span>
-                </div>
-
-                {/* ✏️ EDITAR */}
-                <button onClick={(e) => {
-                  e.stopPropagation(); // evita marcar como concluída
-                  const novo = prompt("Editar:");
-                  if (novo) editTask(task.id, novo);
-                }}>
-                  Editar
-                </button>
-
-                {/* ❌ DELETAR */}
-                <button onClick={(e) => {
-                  e.stopPropagation();
-                  deleteTask(task.id);
-                }}>
-                  X
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </main>
+</main>
+  
 <Calendar tasks={tasks}/>
+
       {/* 🔻 FOOTER */}
       <footer>
         <p>Feito por Leandro</p>
