@@ -46,6 +46,11 @@ li {
     margin: 5px 0;
 }
 
+.feito {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
 .filtro {
     padding-top: 5px;
     padding-left: 5px;

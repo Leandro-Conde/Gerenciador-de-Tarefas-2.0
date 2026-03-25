@@ -3,6 +3,8 @@ import Calendar from "../components/Calendar";
 
 export default function Empresarial() {
 
+  // onde por: {tarefasFiltradas.map(task => (?
+
   const [tasks, setTasks] = useState([]);
   const [titulo, setTitulo] = useState("");
   const [prioridade, setPrioridade] = useState("media");
@@ -10,6 +12,7 @@ export default function Empresarial() {
   const [empresa, setEmpresa] = useState("gennera");
   const [tipo, setTipo] = useState("suporte");
   const [view, setView] = useState("Lista");
+  const [filtro, setFiltro] = useState("Todas")
 
   useEffect(() => {
     const stored = localStorage.getItem("tasks_empresa");
@@ -42,7 +45,50 @@ export default function Empresarial() {
     };
 
     setTasks([...tasks, nova]);
+
+    setTitulo("");
+    setData("");
+    setPrioridade("media");
+    setEmpresa("");
+    setTipo("Suporte");
   }
+
+  function deleteTask(id) {
+    setTasks(task.filter(t => t.id !== id));
+  }
+
+  function editTask(id) {
+    const novo = prompt("Novo título:");
+    if (!novo) return;
+
+    setTasks(task.map(t =>
+      t.id === id? { ...t, titulo: novo } : t
+
+      function clearCompleted() {
+        setTasks(tasks.filter(t => !t.concluida));
+      }
+
+
+      const tarefasFiltradas = tasks.filter(t => {
+        if (filtro === "pendentes") return !t.concluida;
+        if (filtro === "concluidas") return t.concluida;
+        return true;
+
+
+      });
+    ));
+  }
+
+  function starTime(id) {
+    setInterval(() => {
+      setTasks(prev =>
+        prev.map(t =>
+          t.id === id ? { ...t, tempo: t.tempo + 1 } : t
+        )
+      );
+    }, 1000):
+  }
+  
 
   return (
     <>
@@ -62,7 +108,8 @@ export default function Empresarial() {
         type="text"
         value={empresa}
         onChange={e => setEmpresa(e.target.value)}
-        placeholder="Nome da empresa">
+        placeholder="Nome da empresa"
+        />
 
         <select value={tipo} onChange={e => setTipo(e.target.value)}>
           <option value="suporte">Suporte</option>
@@ -82,13 +129,39 @@ export default function Empresarial() {
       <ul>
         {tasks.map(task => (
             <li
-                onClick={() => toggleTask(task.id)}
                 key={task.id}
-                className={`prioridade-${task.prioridade} ${task.concluida ? "feito" : ""}`}>
+                onClick={() => toggleTask(task.id)}
+                className={task.concluida ? "feito" : ""}
+                >
                     
                     <strong>{task.titulo}</strong>
                     <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
                     <span>{task.empresa} | {task.tipo}</span>
+                    <button onClick={(e) =>{e.stopPropagation();
+                      deleteTask(task.id);
+                    }}>
+                      X
+                    </button>
+
+                    <button onClick={(e) => {
+                      e.stopPropagation();
+                      editTask(task.id);
+                    }}>
+                      Editar
+                    </button>
+
+                    <button onClick={clearCompleted}>
+                      Limpar Concluidas
+                    </button>
+
+                    <p>Tempo: {task.tempo || 0}s</p>
+
+                    <button onClick={(e) => {
+                      e.stopPropagation();
+                      starTimer(task.id);
+                    }}>
+                      Tempo
+                    </button>
                   
             </li>
         ))}
