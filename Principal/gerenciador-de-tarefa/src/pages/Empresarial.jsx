@@ -25,6 +25,12 @@ export default function Empresarial() {
 
     if (!titulo || !data) return alert("Preencha tudo");
 
+    function toggleTask(id) {
+      setTasks(tasks.map(t =>
+        t.id === id ? { ...t, concluida: !t.concluida } : t
+      ));
+    }
+
     const nova = {
       id: Date.now(),
       titulo,
@@ -52,10 +58,11 @@ export default function Empresarial() {
           <option value="baixa">Baixa</option>
         </select>
 
-        <select value={empresa} onChange={e => setEmpresa(e.target.value)}>
-          <option value="gennera">Gennera</option>
-          <option value="qi">QI Solution</option>
-        </select>
+        <input
+        type="text"
+        value={empresa}
+        onChange={e => setEmpresa(e.target.value)}
+        placeholder="Nome da empresa">
 
         <select value={tipo} onChange={e => setTipo(e.target.value)}>
           <option value="suporte">Suporte</option>
@@ -63,6 +70,11 @@ export default function Empresarial() {
           <option value="design">Design</option>
         </select>
 
+        <div>
+        <button onClick={() => setFiltro("todas")}>Todas</button>
+        <button onClick={() => setFiltro("pendentes")}>Pendentes</button>
+        <button onClick={() => setFiltro("concluidas")}>Concluídas</button>
+        </div> 
         <button>Adicionar</button>
         
       </form>
@@ -70,12 +82,14 @@ export default function Empresarial() {
       <ul>
         {tasks.map(task => (
             <li
+                onClick={() => toggleTask(task.id)}
                 key={task.id}
-                className={`prioridade-${task.prioridade}`}>
+                className={`prioridade-${task.prioridade} ${task.concluida ? "feito" : ""}`}>
                     
                     <strong>{task.titulo}</strong>
                     <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
                     <span>{task.empresa} | {task.tipo}</span>
+                  
             </li>
         ))}
       </ul>
