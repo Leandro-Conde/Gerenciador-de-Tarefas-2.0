@@ -9,6 +9,7 @@ export default function Home() {
   const [dark, setDark] = useState(false);
   const [menuAberto, setMenuAberto] = useState(true);
   const [pagina, setPagina] = useState("tarefas");
+  const [view, setView] = useState("lista");
 
   useEffect(() => {
     const tema = localStorage.getItem("tema");
@@ -45,15 +46,15 @@ export default function Home() {
         <aside className="sidebar">
           <button onClick={() => setPagina("tarefas")}>Tarefas</button>
           <button onClick={() => setPagina("empresarial")}>Empresarial</button>
-          <button onClick={() => SetView("lista")}>Lista</button>
-          <button onClick={() => SetView("calendario")}>Calendário</button>
+          <button onClick={() => setView("lista")}>Lista</button>
+          <button onClick={() => setView("calendario")}>Calendário</button>
         </aside>
       )}
 
       <main className="container">
         {pagina === "tarefas" && <Pessoal />}
         {pagina === "empresarial" && <Empresarial />}
-        {pagina === "Dashboard" && <Dashboard />}
+        {pagina === "dashboard" && <Dashboard />}
       </main>
 
       {view === "lista" && (
@@ -61,7 +62,7 @@ export default function Home() {
       )}
 
       {view === "calendario" && (
-        <Calendar tasks={tasks}/>
+        <Calendar tasks={[]}/>
       )}
 
       <footer>
