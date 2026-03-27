@@ -3,7 +3,7 @@ import Calendar from "../components/Calendar";
 
 export default function Empresarial() {
 
-  // onde por: {tarefasFiltradas.map(task => (?
+ 
 
   const [tasks, setTasks] = useState([]);
   const [titulo, setTitulo] = useState("");
@@ -12,7 +12,7 @@ export default function Empresarial() {
   const [empresa, setEmpresa] = useState("gennera");
   const [tipo, setTipo] = useState("suporte");
   const [view, setView] = useState("Lista");
-  const [filtro, setFiltro] = useState("Todas")
+  const [filtro, setFiltro] = useState("todas")
 
   useEffect(() => {
     const stored = localStorage.getItem("tasks_empresa");
@@ -28,11 +28,7 @@ export default function Empresarial() {
 
     if (!titulo || !data) return alert("Preencha tudo");
 
-    function toggleTask(id) {
-      setTasks(tasks.map(t =>
-        t.id === id ? { ...t, concluida: !t.concluida } : t
-      ));
-    }
+    
 
     const nova = {
       id: Date.now(),
@@ -50,43 +46,51 @@ export default function Empresarial() {
     setData("");
     setPrioridade("media");
     setEmpresa("");
-    setTipo("Suporte");
+    setTipo("suporte");
+  }
+
+  function toggleTask(id) {
+    setTasks(tasks.map(t =>
+      t.id === id ? { ...t, concluida: !t.concluida } : t
+    ));
   }
 
   function deleteTask(id) {
-    setTasks(task.filter(t => t.id !== id));
+    setTasks(tasks.filter(t => t.id !== id));
   }
 
   function editTask(id) {
     const novo = prompt("Novo título:");
     if (!novo) return;
 
-    setTasks(task.map(t =>
-      t.id === id? { ...t, titulo: novo } : t
-
-      function clearCompleted() {
-        setTasks(tasks.filter(t => !t.concluida));
-      }
-
-
-      const tarefasFiltradas = tasks.filter(t => {
-        if (filtro === "pendentes") return !t.concluida;
-        if (filtro === "concluidas") return t.concluida;
-        return true;
-
-
-      });
+    setTasks(tasks.map(t =>
+      t.id === id ? { ...t, titulo: novo } : t
     ));
   }
 
+  function clearCompleted() {
+    setTasks(tasks.filter(t => !t.concluida));
+  }
+
+
+  const tarefasFiltradas = tasks.filter(t => {
+    if (filtro === "pendentes") return !t.concluida;
+    if (filtro === "concluidas") return t.concluida;
+    return true;
+
+
+  });
+  
   function starTime(id) {
     setInterval(() => {
       setTasks(prev =>
         prev.map(t =>
-          t.id === id ? { ...t, tempo: t.tempo + 1 } : t
+          t.id === id ? { ...t, tempo: (t.tempo || 0)+ 1 } : t
         )
       );
-    }, 1000):
+    }, 1000);
+
+    setTimeout(() => clearInterval(interval), 60000); //para após 1 min
   }
   
 
@@ -117,6 +121,7 @@ export default function Empresarial() {
           <option value="design">Design</option>
         </select>
 
+
         <div>
         <button onClick={() => setFiltro("todas")}>Todas</button>
         <button onClick={() => setFiltro("pendentes")}>Pendentes</button>
@@ -124,10 +129,13 @@ export default function Empresarial() {
         </div> 
         <button>Adicionar</button>
         
+                    <button onClick={clearCompleted}>
+                      Limpar Concluidas
+                    </button>
       </form>
 
       <ul>
-        {tasks.map(task => (
+        {tarefasFiltradas.map(task => (
             <li
                 key={task.id}
                 onClick={() => toggleTask(task.id)}
@@ -137,12 +145,7 @@ export default function Empresarial() {
                     <strong>{task.titulo}</strong>
                     <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
                     <span>{task.empresa} | {task.tipo}</span>
-                    <button onClick={(e) =>{e.stopPropagation();
-                      deleteTask(task.id);
-                    }}>
-                      X
-                    </button>
-
+                
                     <button onClick={(e) => {
                       e.stopPropagation();
                       editTask(task.id);
@@ -150,15 +153,18 @@ export default function Empresarial() {
                       Editar
                     </button>
 
-                    <button onClick={clearCompleted}>
-                      Limpar Concluidas
+                    <button onClick={(e) =>{e.stopPropagation();
+                      deleteTask(task.id);
+                    }}>
+                      X
                     </button>
+
 
                     <p>Tempo: {task.tempo || 0}s</p>
 
                     <button onClick={(e) => {
                       e.stopPropagation();
-                      starTimer(task.id);
+                      starTime(task.id);
                     }}>
                       Tempo
                     </button>
