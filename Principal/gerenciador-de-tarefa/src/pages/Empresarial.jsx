@@ -23,6 +23,20 @@ export default function Empresarial() {
     localStorage.setItem("tasks_empresa", JSON.stringify(tasks));
   }, [tasks]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks(prev =>
+        prev.map(t =>
+          t.timerAtivo
+          ? { ...t, tempo: t.tempo + 1}
+          : t
+        )
+      );
+  }, 10000);
+
+  return () => clearInterval(interval);
+ }, []);
+
   function addTask(e) {
     e.preventDefault();
 
@@ -38,6 +52,8 @@ export default function Empresarial() {
       empresa,
       tipo,
       concluida: false
+      tempo: 0,
+      timerAtivo: false
     };
 
     setTasks([...tasks, nova]);
@@ -91,6 +107,12 @@ export default function Empresarial() {
     }, 1000);
 
     setTimeout(() => clearInterval(interval), 60000); //para após 1 min
+  }
+
+  function toggleTimer(id) {
+    setTasks(tasks.map(t => 
+      t.id === id ? { ...t, timerAtivo: !t.timerAtivo } : t
+    ));
   }
   
 
