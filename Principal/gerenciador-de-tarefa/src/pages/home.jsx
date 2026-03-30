@@ -3,8 +3,11 @@ import Pessoal from "./Pessoal";
 import Empresarial from "./Empresarial";
 import Dashboard from "./Dashboard";
 import Calendar from "../components/Calendar";
+import { motion } from "framer-motion";
+
 
 export default function Home() {
+  
 
   const [dark, setDark] = useState(false);
   const [menuAberto, setMenuAberto] = useState(true);
@@ -39,13 +42,17 @@ export default function Home() {
           ☰
         </button>
 
-        <button onClick={() => setPagina("dashboard")}>Dashboard</button>
+        <button onClick={() => setPagina("Calendário")}>Calendário</button>
+
+
+
+
       </header>
 
       {menuAberto && (
         <aside className="sidebar">
           <button onClick={() => setPagina("tarefas")}>Tarefas</button>
-          <button onClick={() => setPagina("empresarial")}>Empresarial</button>
+          <button onClick={() => setPagina("Empresarial")}>Empresarial</button>
           <button onClick={() => setView("lista")}>Lista</button>
           <button onClick={() => setView("calendario")}>Calendário</button>
         </aside>
@@ -53,8 +60,9 @@ export default function Home() {
 
       <main className="container">
         {pagina === "tarefas" && <Pessoal />}
-        {pagina === "empresarial" && <Empresarial />}
-        {pagina === "dashboard" && <Dashboard />}
+        {pagina === "Empresarial" && <Empresarial />}
+        {pagina === "Calendário" && <Dashboard />}
+
       </main>
 
       {view === "lista" && (

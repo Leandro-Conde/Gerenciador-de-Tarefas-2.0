@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import Calendar from "../components/Calendar";
+import { motion } from "framer-motion";
+//import { AnimatePresence } from "framer-motion";
 
 export default function Empresarial() {
 
@@ -32,7 +34,7 @@ export default function Empresarial() {
           : t
         )
       );
-  }, 10000);
+  }, 1000);
 
   return () => clearInterval(interval);
  }, []);
@@ -40,7 +42,7 @@ export default function Empresarial() {
   function addTask(e) {
     e.preventDefault();
 
-    if (!titulo || !data) return alert("Preencha tudo");
+    if (!titulo || !data) return alert("Preencha todas as informações");
 
     
 
@@ -51,7 +53,7 @@ export default function Empresarial() {
       data,
       empresa,
       tipo,
-      concluida: false
+      concluida: false,
       tempo: 0,
       timerAtivo: false
     };
@@ -67,7 +69,8 @@ export default function Empresarial() {
 
   function toggleTask(id) {
     setTasks(tasks.map(t =>
-      t.id === id ? { ...t, concluida: !t.concluida } : t
+      t.id === id
+      ? { ...t, concluida: !t.concluida, timerAtivo: false } : t
     ));
   }
 
@@ -97,17 +100,7 @@ export default function Empresarial() {
 
   });
   
-  function starTime(id) {
-    setInterval(() => {
-      setTasks(prev =>
-        prev.map(t =>
-          t.id === id ? { ...t, tempo: (t.tempo || 0)+ 1 } : t
-        )
-      );
-    }, 1000);
-
-    setTimeout(() => clearInterval(interval), 60000); //para após 1 min
-  }
+  
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
@@ -151,49 +144,62 @@ export default function Empresarial() {
         </div> 
         <button>Adicionar</button>
         
-                    <button onClick={clearCompleted}>
+                    <button type="button" onClick={clearCompleted}>
                       Limpar Concluidas
                     </button>
       </form>
 
       <ul>
-        {tarefasFiltradas.map(task => (
-            <li
-                key={task.id}
-                onClick={() => toggleTask(task.id)}
-                className={task.concluida ? "feito" : ""}
-                >
-                    
-                    <strong>{task.titulo}</strong>
-                    <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
-                    <span>{task.empresa} | {task.tipo}</span>
-                
-                    <button onClick={(e) => {
-                      e.stopPropagation();
-                      editTask(task.id);
-                    }}>
-                      Editar
-                    </button>
+  {tarefasFiltradas.map(task => (
+    <motion.li
+      key={task.id}
+      onClick={() => toggleTask(task.id)}
+      className={`prioridade-${task.prioridade} 
+                  ${task.timerAtivo ? "timer-ativo" : ""} 
+                  ${task.concluida ? "feito" : ""}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+    >
+      <strong>{task.titulo}</strong>
 
-                    <button onClick={(e) =>{e.stopPropagation();
-                      deleteTask(task.id);
-                    }}>
-                      X
-                    </button>
+      <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
 
+      <span>{task.empresa} | {task.tipo}</span>
 
-                    <p>Tempo: {task.tempo || 0}s</p>
+      <button onClick={(e) => {
+        e.stopPropagation();
+        editTask(task.id);
+      }}>
+        Editar
+      </button>
 
-                    <button onClick={(e) => {
-                      e.stopPropagation();
-                      starTime(task.id);
-                    }}>
-                      Tempo
-                    </button>
-                  
-            </li>
-        ))}
-      </ul>
+      <button onClick={(e) => {
+        e.stopPropagation();
+        deleteTask(task.id);
+      }}>
+        X
+      </button>
+
+      <p>Tempo: {task.tempo || 0}s</p>
+
+      <button onClick={(e) => {
+        e.stopPropagation();
+        toggleTimer(task.id);
+      }}>
+        ⏱️
+      </button>
+    </motion.li>
+  ))}
+</ul>
+
+     {/* <span className={`badge ${task.prioridade}`}>
+        {task.prioridade}
+      </span>
+
+      <AnimatePresence>
+        {tarefasFiltradas.map(...)}
+      </AnimatePresence> */}
 
       <Calendar tasks={tasks} />
     </>
