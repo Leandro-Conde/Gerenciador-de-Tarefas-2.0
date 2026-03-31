@@ -162,6 +162,17 @@ button {
 .badge.media { background: orange; }
 .badge.baixa { background: green; }
 
+.timer-urgente {
+    animation: piscar 0.5s infinite;
+    background: red;
+}
+
+@keyframes piscar {
+    0% { opacity: 1;}
+    50% { opacity: 0.3;}
+    100% { opacity: 1;}
+}
+
 ul {
     list-style: none;
     display: flex;

@@ -15,6 +15,7 @@ export default function Empresarial() {
   const [tipo, setTipo] = useState("suporte");
   const [view, setView] = useState("Lista");
   const [filtro, setFiltro] = useState("todas")
+  const [tempoInput, setTempoInput] = useState("");
 
   useEffect(() => {
     const stored = localStorage.getItem("tasks_empresa");
@@ -28,12 +29,17 @@ export default function Empresarial() {
   useEffect(() => {
     const interval = setInterval(() => {
       setTasks(prev =>
-        prev.map(t =>
-          t.timerAtivo
-          ? { ...t, tempo: t.tempo + 1}
-          : t
-        )
-      );
+        prev.map(t => {
+          if (t.timerAtivo && t.tempo !== null) {
+            if (t.tempo > 0) {
+              return { ...t, tempo: t.tempo - 1};
+            } else {
+              return { ...t, timerAtivo: false };
+             }
+            }
+            return t;
+          })
+        );
   }, 1000);
 
   return () => clearInterval(interval);
@@ -54,7 +60,7 @@ export default function Empresarial() {
       empresa,
       tipo,
       concluida: false,
-      tempo: 0,
+      tempo: tempoInput ? Number(tempoInput) : null,
       timerAtivo: false
     };
 
@@ -138,9 +144,9 @@ export default function Empresarial() {
 
 
         <div>
-        <button onClick={() => setFiltro("todas")}>Todas</button>
-        <button onClick={() => setFiltro("pendentes")}>Pendentes</button>
-        <button onClick={() => setFiltro("concluidas")}>Concluídas</button>
+        <button type="button" onClick={() => setFiltro("todas")}>Todas</button>
+        <button type="button" onClick={() => setFiltro("pendentes")}>Pendentes</button>
+        <button type="button" onClick={() => setFiltro("concluidas")}>Concluídas</button>
         </div> 
         <button>Adicionar</button>
         
@@ -156,7 +162,8 @@ export default function Empresarial() {
       onClick={() => toggleTask(task.id)}
       className={`prioridade-${task.prioridade} 
                   ${task.timerAtivo ? "timer-ativo" : ""} 
-                  ${task.concluida ? "feito" : ""}`}
+                  ${task.concluida ? "feito" : ""}
+                  ${task.tempo !== null && task.tempo <= 10 ? "timer-urgente" : ""}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
@@ -185,13 +192,20 @@ export default function Empresarial() {
 
       <button onClick={(e) => {
         e.stopPropagation();
+        if (task.tempo === null) {
+          alert ("Defina um tempo primeiro!");
+            return;
+        }
         toggleTimer(task.id);
-      }}>
+      }}
+        >
         ⏱️
       </button>
     </motion.li>
   ))}
 </ul>
+
+
 
      {/* <span className={`badge ${task.prioridade}`}>
         {task.prioridade}
