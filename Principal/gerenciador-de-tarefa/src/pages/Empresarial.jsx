@@ -62,7 +62,7 @@ export default function Empresarial() {
       empresa,
       tipo,
       concluida: false,
-      tempo: tempoInput ? Number(tempoInput) : null,
+      tempoRestante: tempoInput ? Number(tempoInput) : null,
       timerAtivo: false
     };
 
@@ -119,14 +119,12 @@ export default function Empresarial() {
       t.id === id ? { ...t, timerAtivo: true } : t
     ));
 
-    <p>
-      tempo: {task.tempoRestante !== null ? `${task.tempoRestante}s` : "Sem timer"}
-    </p>
+    
   }
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
-      t.id === id ? { ...t, concluida: !t.concluida, timerAtivo: false } : t
+      t.id === id ? { ...t, timerAtivo: !t.timerAtivo: } : t
     ));
   }
   
@@ -176,6 +174,10 @@ export default function Empresarial() {
                     <button type="button" onClick={clearCompleted}>
                       Limpar Concluidas
                     </button>
+
+                    <p>
+      tempo: {task.tempoRestante !== null ? `${task.tempoRestante}s` : "Sem timer"}
+    </p>
       </form>
 
       <ul>
@@ -211,11 +213,11 @@ export default function Empresarial() {
         X
       </button>
 
-      <p>Tempo: {task.tempo || 0}s</p>
+      {/*<p>Tempo: {task.tempo || 0}s</p>*/}
 
       <button onClick={(e) => {
         e.stopPropagation();
-        if (task.tempo === null) {
+        if (task.tempoRestante === null) {
           alert ("Defina um tempo primeiro!");
             return;
         }
