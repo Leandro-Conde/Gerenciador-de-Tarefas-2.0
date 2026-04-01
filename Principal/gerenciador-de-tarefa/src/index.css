@@ -173,6 +173,12 @@ button {
     100% { opacity: 1;}
 }
 
+.tempo-esgotado {
+    background:  red;
+    color:  white;
+    animation:  piscar 0.8s infinite;
+}
+
 ul {
     list-style: none;
     display: flex;

@@ -16,6 +16,7 @@ export default function Empresarial() {
   const [view, setView] = useState("Lista");
   const [filtro, setFiltro] = useState("todas")
   const [tempoInput, setTempoInput] = useState("");
+  
 
   useEffect(() => {
     const stored = localStorage.getItem("tasks_empresa");
@@ -30,13 +31,14 @@ export default function Empresarial() {
     const interval = setInterval(() => {
       setTasks(prev =>
         prev.map(t => {
-          if (t.timerAtivo && t.tempo !== null) {
-            if (t.tempo > 0) {
-              return { ...t, tempo: t.tempo - 1};
-            } else {
-              return { ...t, timerAtivo: false };
-             }
-            }
+          if (t.timerAtivo && t.tempoRestante > 0) {
+            return { ...t, tempoRestante: t.tempoRestante - 1 };
+          }
+
+          if (t.timerAtivo && t.tempoRestante === 0) {
+            return { ...t, timerAtivo: false, esgotado: true };
+          }
+
             return t;
           })
         );
@@ -105,12 +107,26 @@ export default function Empresarial() {
 
 
   });
+
+  const formatarTempo = (s) => {
+    const min = Math.floor(s / 60);
+    const seg = s % 60;
+    return `${min}:${seg.toString().padStart(2, "0")}`;
+  };
   
-  
+  function startTimer(id) {
+    setTasks(tasks.map(t =>
+      t.id === id ? { ...t, timerAtivo: true } : t
+    ));
+
+    <p>
+      tempo: {task.tempoRestante !== null ? `${task.tempoRestante}s` : "Sem timer"}
+    </p>
+  }
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
-      t.id === id ? { ...t, timerAtivo: !t.timerAtivo } : t
+      t.id === id ? { ...t, concluida: !t.concluida, timerAtivo: false } : t
     ));
   }
   
@@ -135,6 +151,13 @@ export default function Empresarial() {
         onChange={e => setEmpresa(e.target.value)}
         placeholder="Nome da empresa"
         />
+
+        <input
+          type="number"
+          placeholder="Tempo (segundos)"
+          value={tempoInput}
+          onChange={e => setTempoInput(e.target.value)}
+          />
 
         <select value={tipo} onChange={e => setTipo(e.target.value)}>
           <option value="suporte">Suporte</option>
@@ -201,6 +224,10 @@ export default function Empresarial() {
         >
         ⏱️
       </button>
+
+      <li className={`prioridade-${task.prioridade}
+      ${task.esgotado ? "tempo-esgotado" : ""}`}>
+
     </motion.li>
   ))}
 </ul>
