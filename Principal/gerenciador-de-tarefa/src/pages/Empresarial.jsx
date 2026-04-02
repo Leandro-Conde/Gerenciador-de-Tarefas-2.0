@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Calendar from "../components/Calendar";
 import { motion } from "framer-motion";
-//import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 export default function Empresarial() {
 
@@ -62,8 +62,10 @@ export default function Empresarial() {
       empresa,
       tipo,
       concluida: false,
+      tempo: tempoInput ? Number(tempoInput) : null,
       tempoRestante: tempoInput ? Number(tempoInput) : null,
-      timerAtivo: false
+      timerAtivo: false,
+      esgotado: false
     };
 
     setTasks([...tasks, nova]);
@@ -78,7 +80,7 @@ export default function Empresarial() {
   function toggleTask(id) {
     setTasks(tasks.map(t =>
       t.id === id
-      ? { ...t, concluida: !t.concluida, timerAtivo: false } : t
+      ? { ...t, timerAtivo: !t.timerAtivo } : t
     ));
   }
 
@@ -124,7 +126,7 @@ export default function Empresarial() {
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
-      t.id === id ? { ...t, timerAtivo: !t.timerAtivo: } : t
+      t.id === id ? { ...t, concluida: !t.concluida, timerAtivo: false } : t
     ));
   }
   
@@ -175,9 +177,7 @@ export default function Empresarial() {
                       Limpar Concluidas
                     </button>
 
-                    <p>
-      tempo: {task.tempoRestante !== null ? `${task.tempoRestante}s` : "Sem timer"}
-    </p>
+                  
       </form>
 
       <ul>
@@ -213,7 +213,16 @@ export default function Empresarial() {
         X
       </button>
 
-      {/*<p>Tempo: {task.tempo || 0}s</p>*/}
+     <p>
+      Tempo:
+      {task.tempoRestante !== null
+      ? formatarTempo(task.tempoRestante)
+      : "Sem Timer"}
+     </p>
+
+  <p>
+      tempo: {task.tempoRestante !== null ? `${task.tempoRestante}s` : "Sem timer"}
+    </p>
 
       <button onClick={(e) => {
         e.stopPropagation();
@@ -227,8 +236,12 @@ export default function Empresarial() {
         ⏱️
       </button>
 
-      <li className={`prioridade-${task.prioridade}
-      ${task.esgotado ? "tempo-esgotado" : ""}`}>
+     {/*} className={`prioridade-${task.prioridade}
+${task.esgotado ? "tempo-esgotado" : ""}
+${task.timerAtivo ? "timer-ativo" : ""}
+${task.concluida ? "feito" : ""}`}
+*/}
+
 
     </motion.li>
   ))}
@@ -238,10 +251,14 @@ export default function Empresarial() {
 
      {/* <span className={`badge ${task.prioridade}`}>
         {task.prioridade}
-      </span>
+      </span> */}
 
-      <AnimatePresence>
-        {tarefasFiltradas.map(...)}
+     {/*} <AnimatePresence>
+        {tarefasFiltradas.map(task => (
+          <motion.li key={task.id}>
+            {task.titulo}
+          </motion.li>
+        ))}
       </AnimatePresence> */}
 
       <Calendar tasks={tasks} />
