@@ -80,7 +80,8 @@ export default function Empresarial() {
   function toggleTask(id) {
     setTasks(tasks.map(t =>
       t.id === id
-      ? { ...t, timerAtivo: !t.timerAtivo } : t
+        ? { ...t, concluida: !t.concluida, timerAtivo: false }
+        : t
     ));
   }
 
@@ -126,7 +127,9 @@ export default function Empresarial() {
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
-      t.id === id ? { ...t, concluida: !t.concluida, timerAtivo: false } : t
+      t.id === id 
+        ? { ...t, timerAtivo: !t.timerAtivo } 
+        : t
     ));
   }
   
@@ -171,7 +174,7 @@ export default function Empresarial() {
         <button type="button" onClick={() => setFiltro("pendentes")}>Pendentes</button>
         <button type="button" onClick={() => setFiltro("concluidas")}>Concluídas</button>
         </div> 
-        <button>Adicionar</button>
+        <button type="submit">Adicionar</button>
         
                     <button type="button" onClick={clearCompleted}>
                       Limpar Concluidas
@@ -219,10 +222,6 @@ export default function Empresarial() {
       ? formatarTempo(task.tempoRestante)
       : "Sem Timer"}
      </p>
-
-  <p>
-      tempo: {task.tempoRestante !== null ? `${task.tempoRestante}s` : "Sem timer"}
-    </p>
 
       <button onClick={(e) => {
         e.stopPropagation();
