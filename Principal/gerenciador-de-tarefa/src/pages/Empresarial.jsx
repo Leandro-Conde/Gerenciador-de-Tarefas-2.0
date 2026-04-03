@@ -191,7 +191,7 @@ export default function Empresarial() {
       className={`prioridade-${task.prioridade} 
                   ${task.timerAtivo ? "timer-ativo" : ""} 
                   ${task.concluida ? "feito" : ""}
-                  ${task.tempo !== null && task.tempo <= 10 ? "timer-urgente" : ""}`}
+                  ${task.tempoRestante !== null && task.tempo <= 10 ? "timer-urgente" : ""}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
