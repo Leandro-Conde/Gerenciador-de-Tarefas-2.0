@@ -16,6 +16,7 @@ export default function Empresarial() {
   const [view, setView] = useState("Lista");
   const [filtro, setFiltro] = useState("todas")
   const [tempoInput, setTempoInput] = useState("");
+
   
 
   useEffect(() => {
@@ -31,14 +32,20 @@ export default function Empresarial() {
     const interval = setInterval(() => {
       setTasks(prev =>
         prev.map(t => {
-          if (t.timerAtivo && t.tempoRestante > 0) {
+          if (t.timerAtivo) {
+            if  (t.tempoRestante > 1) {
             return { ...t, tempoRestante: t.tempoRestante - 1 };
           }
 
-          if (t.timerAtivo && t.tempoRestante === 0) {
-            return { ...t, timerAtivo: false, esgotado: true };
+          if (t.timerAtivo && t.tempoRestante <= 1) {
+            return { ...t, 
+              tempoRestante: 0,
+              timerAtivo: false,
+              esgotado: true, 
+              concluida: true
+            };
           }
-
+        }
             return t;
           })
         );
@@ -46,6 +53,7 @@ export default function Empresarial() {
 
   return () => clearInterval(interval);
  }, []);
+
 
   function addTask(e) {
     e.preventDefault();
@@ -64,11 +72,11 @@ export default function Empresarial() {
       concluida: false,
       tempo: tempoInput ? Number(tempoInput) : null,
       tempoRestante: tempoInput ? Number(tempoInput) : null,
-      timerAtivo: false,
+      timerAtivo: tempoInput ? true : false,
       esgotado: false
     };
 
-    setTasks([...tasks, nova]);
+    setTasks(prev => [...prev, nova]);
 
     setTitulo("");
     setData("");
@@ -117,13 +125,22 @@ export default function Empresarial() {
     return `${min}:${seg.toString().padStart(2, "0")}`;
   };
   
-  function startTimer(id) {
-    setTasks(tasks.map(t =>
-      t.id === id ? { ...t, timerAtivo: true } : t
-    ));
+function editTempo(id) {
+  const novoTempo = prompt("Novo tempo em segundos");
+ if (!novoTempo) return;
 
-    
+ setTasks(tasks.map(t =>
+  t.id === id ? {
+    ...t,
+    tempo: Number(novoTempo),
+    tempoRestante: Number(novoTempo),
+    esgotado: false, 
+    timerAtivo: true
   }
+  : t
+ ));
+}
+
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
@@ -191,7 +208,7 @@ export default function Empresarial() {
       className={`prioridade-${task.prioridade} 
                   ${task.timerAtivo ? "timer-ativo" : ""} 
                   ${task.concluida ? "feito" : ""}
-                  ${task.tempoRestante !== null && task.tempo <= 10 ? "timer-urgente" : ""}`}
+                  ${task.tempoRestante !== null && task.tempoRestante <= 10 ? "timer-urgente" : ""}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
@@ -223,17 +240,37 @@ export default function Empresarial() {
       : "Sem Timer"}
      </p>
 
+        <button onClick={(e) => {
+          e.stopPropagation();
+
+          if (task.tempoRestante === null) {
+            alert("Defina um tempo antes");
+            return;
+          }
+
+          toggleTimer(task.id);
+        }}>
+
+          {task.timerAtivo ? "⏸" : "▶️"}
+
+        </button>
+
       <button onClick={(e) => {
         e.stopPropagation();
-        if (task.tempoRestante === null) {
-          alert ("Defina um tempo primeiro!");
-            return;
-        }
-        toggleTimer(task.id);
-      }}
-        >
-        ⏱️
+        editTempo(task.id);
+      }} >
+        ⏱️ Editar Tempo
       </button>
+
+      {task.concluida && (
+      <button onClick={(e) => {
+        e.stopPropagation();
+        deleteTask(task.id);
+      }}>
+        Concluir
+
+      </button>
+      )}
 
      {/*} className={`prioridade-${task.prioridade}
 ${task.esgotado ? "tempo-esgotado" : ""}

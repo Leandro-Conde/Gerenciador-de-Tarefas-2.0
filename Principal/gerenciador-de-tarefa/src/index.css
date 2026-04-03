@@ -191,6 +191,11 @@ li {
     border-radius: 6px;
 }
 
+/*button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }*/
+
 #task-list {
     list-style: none;
     padding: 0;
