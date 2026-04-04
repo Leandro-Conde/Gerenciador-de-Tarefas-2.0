@@ -11,11 +11,12 @@ export default function Empresarial() {
   const [titulo, setTitulo] = useState("");
   const [prioridade, setPrioridade] = useState("media");
   const [data, setData] = useState("");
-  const [empresa, setEmpresa] = useState("gennera");
+  const [empresa, setEmpresa] = useState("");
   const [tipo, setTipo] = useState("suporte");
   const [view, setView] = useState("Lista");
   const [filtro, setFiltro] = useState("todas")
   const [tempoInput, setTempoInput] = useState("");
+  const [descAberta, setDescAberta] = useState(null);
 
   
 
@@ -271,6 +272,16 @@ function editTempo(id) {
 
       </button>
       )}
+
+      <button
+      className="btn-descricao"
+      onClick={(e) => {
+        e.stopPropagation();
+        setDescAberta(setDescAberta === task.id ? null : task.id);
+      }}
+      >
+        💬
+      </button>
 
      {/*} className={`prioridade-${task.prioridade}
 ${task.esgotado ? "tempo-esgotado" : ""}
