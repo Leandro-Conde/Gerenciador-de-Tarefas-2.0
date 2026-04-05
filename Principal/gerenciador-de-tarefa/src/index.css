@@ -135,6 +135,28 @@ button {
     margin: 10px;
 }
 
+.descricao {
+    position: absolute;
+  right: 10px;
+  top: 10px;
+
+  background: #222;
+  color: #fff;
+
+  padding: 10px 14px; 
+  border-radius: 14px;
+
+  font-size: 0.85rem;
+
+  max-width: 200px;
+  min-width: 120px; 
+
+  word-break: break-word;
+  line-height: 1.4;
+
+  transition: all 0.3s ease;
+  }
+
 /*Lista*/
 .prioridade-alta {
     background-color: rgba(255, 0, 0, 0.3);
@@ -187,8 +209,8 @@ ul {
 }
 
 li {
-    padding: 1rem;
-    border-radius: 6px;
+    position: relative;
+  padding-right: 80px;
 }
 
 /*button:disabled {
@@ -287,3 +309,48 @@ footer {
     }
     
 }
+
+@media (min-width: 1024px) {
+    .descricao {
+      position: absolute;
+  
+      left: -260px; /* 👈 joga pra fora */
+      top: 50%;
+      transform: translateY(-50%);
+  
+      width: 220px;
+      text-align: center;
+  
+      background: #535353;
+      color: #fff;
+  
+      padding: 12px 16px;
+      border-radius: 16px;
+  
+      font-size: 0.9rem;
+      line-height: 1.4;
+  
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+
+      transition: all 0.3s ease;
+    }
+
+    @media (min-width: 1024px) {
+        .descricao::after {
+          content: "";
+          position: absolute;
+      
+          right: -8px;
+          top: 50%;
+          transform: translateY(-50%) rotate(45deg);
+      
+          width: 14px;
+          height: 14px;
+      
+          background: #535353;
+        }
+      }
+
+      
+
+  }

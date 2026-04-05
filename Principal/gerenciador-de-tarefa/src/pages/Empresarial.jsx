@@ -16,7 +16,7 @@ export default function Empresarial() {
   const [view, setView] = useState("Lista");
   const [filtro, setFiltro] = useState("todas")
   const [tempoInput, setTempoInput] = useState("");
-  const [descAberta, setDescAberta] = useState(null);
+  const [descricao, setDescricao] = useState("");
 
   
 
@@ -98,6 +98,21 @@ export default function Empresarial() {
     setTasks(tasks.filter(t => t.id !== id));
   }
 
+  function editDescricao(id) {
+    const nova = prompt("Digite a descrição (máx 100 caracteres):");
+  
+    if (!nova) return;
+  
+    if (nova.length > 100) {
+      alert("Passou do limite!");
+      return;
+    }
+  
+    setTasks(tasks.map(t =>
+      t.id === id ? { ...t, descricao: nova } : t
+    ));
+  }
+
   function editTask(id) {
     const novo = prompt("Novo título:");
     if (!novo) return;
@@ -157,7 +172,7 @@ function editTempo(id) {
       <h2>Empresarial</h2>
 
       <form onSubmit={addTask}>
-        <input value={titulo} onChange={e => setTitulo(e.target.value)} />
+        <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título da tarefa"/>
         <input type="date" value={data} onChange={e => setData(e.target.value)} />
 
         <select value={prioridade} onChange={e => setPrioridade(e.target.value)}>
@@ -170,12 +185,12 @@ function editTempo(id) {
         type="text"
         value={empresa}
         onChange={e => setEmpresa(e.target.value)}
-        placeholder="Nome da empresa"
+        placeholder="Nome da empresa (Obrigatório)"
         />
 
         <input
           type="number"
-          placeholder="Tempo (segundos)"
+          placeholder="Tempo (segundos) (ex: 3600 = 1 horas)"
           value={tempoInput}
           onChange={e => setTempoInput(e.target.value)}
           />
@@ -273,15 +288,27 @@ function editTempo(id) {
       </button>
       )}
 
-      <button
-      className="btn-descricao"
-      onClick={(e) => {
-        e.stopPropagation();
-        setDescAberta(setDescAberta === task.id ? null : task.id);
-      }}
-      >
-        💬
-      </button>
+        <button
+          className="btn-descricao"
+          onClick={(e) => {
+            e.stopPropagation();
+            editDescricao(task.id);
+          }}
+        >
+          💬
+        </button>
+
+
+
+      {task.descricao && (
+        <motion.p
+          className="descricao"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {task.descricao}
+        </motion.p>
+      )}
 
      {/*} className={`prioridade-${task.prioridade}
 ${task.esgotado ? "tempo-esgotado" : ""}
