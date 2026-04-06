@@ -12,6 +12,7 @@
     --fundo-card: #c42149;
     --letra-dois: #fff;
     --botao: #721347;
+    --card: #ffffff;
     
 }
 
@@ -32,18 +33,35 @@ body{
     font-family: Arial, Helvetica, sans-serif;
     background: var(--fundo-principal);
     color: var(--letra-um);
-}
-
-body {
     background: var(--bg);
     color: var(--text);
     transition: background 0.3s ease, color 0.3s ease;
 }
 
+
 li {
     background-color: var(--card);
     padding: 8px;
     margin: 5px 0;
+    position: relative;
+  padding-right: 80px;
+}
+
+/*.historico {
+    width: 280px;
+    background: #111;
+    padding: 15px;
+    border-right: 2px solid #333;
+    overflow-y: auto;
+}*/
+
+.excluida {
+    text-decoration: line-through;
+    color: red;
+}
+
+.concluida {
+    color: green;
 }
 
 .feito {
@@ -108,13 +126,14 @@ li {
 }
 
 
-.container {
-    /*border: 2px dashed black;*/
+/*.container {
+    /*border: 2px dashed black;
     padding: 1rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-}
+}*/
+
 
 form {
     display: flex;
@@ -132,13 +151,14 @@ button {
     color: white;
     border: none;
     cursor: pointer;
-    margin: 10px;
+    margin: 5px;
 }
 
 .descricao {
     position: absolute;
   right: 10px;
   top: 10px;
+  z-index: 10;
 
   background: #222;
   color: #fff;
@@ -206,11 +226,6 @@ ul {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-}
-
-li {
-    position: relative;
-  padding-right: 80px;
 }
 
 /*button:disabled {
@@ -307,8 +322,26 @@ footer {
         margin: 20px;
         margin-left: 75px;
     }
-    
 }
+
+@media (max-width: 768px) {
+  
+    .historico {
+      position: fixed;
+      left: -100%;
+      top: 0;
+      height: 100%;
+      width: 250px;
+      transition: 0.3s;
+      z-index: 999;
+    }
+  
+    .historico.ativo {
+      left: 0;
+      background-color: #535353;
+    }
+  
+  }
 
 @media (min-width: 1024px) {
     .descricao {
@@ -335,22 +368,54 @@ footer {
       transition: all 0.3s ease;
     }
 
-    @media (min-width: 1024px) {
-        .descricao::after {
-          content: "";
-          position: absolute;
-      
-          right: -8px;
-          top: 50%;
-          transform: translateY(-50%) rotate(45deg);
-      
-          width: 14px;
-          height: 14px;
-      
-          background: #535353;
-        }
+    .descricao::after {
+        content: "";
+        position: absolute;
+    
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+    
+        width: 14px;
+        height: 14px;
+    
+        background: #535353;
       }
 
+      /*.container {
+          display: flex;
+          height: 100vh;
+      }*/
+
+      .conteudo{
+          flex: 1;
+          padding: 20px;
+          min-width: 900px;
+          margin: 0 auto;
+      }
+
+      .historico {
+        position: fixed;
+        top: 0;
+        left: -300px; /* escondido */
+        width: 280px;
+        height: 100vh;
+        background: #111;
+        padding: 20px;
+        overflow-y: auto;
+        transition: 0.3s;
+        z-index: 2000;
+      }
       
+      .historico.ativo {
+        left: 0; /* aparece */
+        background-color: #535353;
+      }
+
+      /*.layout {
+        display: flex;
+        min-height: 100vh;
+      }*/
+
 
   }

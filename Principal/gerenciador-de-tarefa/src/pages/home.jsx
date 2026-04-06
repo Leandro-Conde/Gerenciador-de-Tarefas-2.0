@@ -58,6 +58,23 @@ export default function Home() {
         </aside>
       )}
 
+
+     {/* <main className="conteudo">
+
+      <aside className="historico">
+      <h3>Historico</h3>
+      <ul>
+        {historico.map(item => (
+          <li key={item.id + item.dataAcao}>
+            {item.titulo} - {item.status}
+          </li>
+        ))}
+      </ul>
+      </aside>
+
+      </main>*/}
+
+
       <main className="container">
         {pagina === "tarefas" && <Pessoal />}
         {pagina === "Empresarial" && <Empresarial />}

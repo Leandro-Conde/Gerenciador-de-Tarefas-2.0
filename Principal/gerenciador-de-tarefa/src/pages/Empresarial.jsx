@@ -17,34 +17,72 @@ export default function Empresarial() {
   const [filtro, setFiltro] = useState("todas")
   const [tempoInput, setTempoInput] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [historico, setHistorico] = useState([]);
+  const [abrirHistorico, setAbrirHistorico] = useState(false);
 
   
 
   useEffect(() => {
     const stored = localStorage.getItem("tasks_empresa");
     if (stored) setTasks(JSON.parse(stored));
+
+    const hist = localStorage.getItem("historico_tasks");
+    if (hist) setHistorico(JSON.parse(hist));
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("historico_tasks", JSON.stringify(historico));
+  }, [historico]);
 
   useEffect(() => {
     localStorage.setItem("tasks_empresa", JSON.stringify(tasks));
   }, [tasks]);
 
   useEffect(() => {
+    const concluidas = tasks.filter(t => t.concluida && !t.jaSalva);
+
+    if (concluidas.length > 0) {
+      setHistorico(prev => [
+        ...prev,
+        ...concluidas.map(t => ({
+          ...t,
+          status: "concluida",
+          dataAcao: new Date().toISOString()
+        }))
+      ]);
+
+      setTasks(prev =>
+        prev.map(t =>
+          t.concluida ? { ...t, jaSalva: true } : t
+        )
+      );
+    }
+  }, [tasks]);
+
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setTasks(prev =>
         prev.map(t => {
           if (t.timerAtivo) {
-            if  (t.tempoRestante > 1) {
+            if  (t.timerAtivo && t.tempoRestante !== null) {
             return { ...t, tempoRestante: t.tempoRestante - 1 };
           }
 
           if (t.timerAtivo && t.tempoRestante <= 1) {
-            return { ...t, 
+            const finalizada = { ...t, 
               tempoRestante: 0,
               timerAtivo: false,
               esgotado: true, 
               concluida: true
             };
+
+            setHistorico(prev => [
+              ...prev,
+              {...finalizada, status: "concluida", dataAcao: new Date() }
+            ]);
+
+            return finalizada;
           }
         }
             return t;
@@ -96,6 +134,17 @@ export default function Empresarial() {
 
   function deleteTask(id) {
     setTasks(tasks.filter(t => t.id !== id));
+    const taskRemovida = tasks.find(t => t.id === id);
+
+    if (!taskRemovida) return;
+
+    setTasks(prev => prev.filter(t => t.id !== id));
+
+    setHistorico(prev => [
+      ...prev,
+      { ...taskRemovida, status: "excluida", dataAcao: new Date() }
+    ]);
+
   }
 
   function editDescricao(id) {
@@ -103,7 +152,7 @@ export default function Empresarial() {
   
     if (!nova) return;
   
-    if (nova.length > 100) {
+    if (nova.length > 180) {
       alert("Passou do limite!");
       return;
     }
@@ -171,7 +220,24 @@ function editTempo(id) {
     <>
       <h2>Empresarial</h2>
 
-      <form onSubmit={addTask}>
+      
+    <div className="layout">
+      <aside className={`historico ${abrirHistorico ? "ativo" : ""}`}>
+
+        <h3>Histórico</h3>
+
+          <ul>
+            {historico.map(item => (
+              <li key={item.id + item.dataAcao}>
+                {item.titulo} - {item.status}
+              </li>
+            ))}
+          </ul>
+           </aside>
+        
+            <main className="conteudo">
+
+            <form onSubmit={addTask}>
         <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título da tarefa"/>
         <input type="date" value={data} onChange={e => setData(e.target.value)} />
 
@@ -206,6 +272,7 @@ function editTempo(id) {
         <button type="button" onClick={() => setFiltro("todas")}>Todas</button>
         <button type="button" onClick={() => setFiltro("pendentes")}>Pendentes</button>
         <button type="button" onClick={() => setFiltro("concluidas")}>Concluídas</button>
+        <button type="button" onClick={() => setAbrirHistorico(prev => !prev)}>📜</button>
         </div> 
         <button type="submit">Adicionar</button>
         
@@ -213,8 +280,10 @@ function editTempo(id) {
                       Limpar Concluidas
                     </button>
 
-                  
+
       </form>
+
+
 
       <ul>
   {tarefasFiltradas.map(task => (
@@ -231,7 +300,8 @@ function editTempo(id) {
     >
       <strong>{task.titulo}</strong>
 
-      <p>{new Date(task.data).toLocaleDateString("pt-BR")}</p>
+      <p>{task.data ? new Date(task.data).toLocaleDateString("pt-BR")
+      : "sem data"}</p>
 
       <span>{task.empresa} | {task.tipo}</span>
 
@@ -322,6 +392,10 @@ ${task.concluida ? "feito" : ""}`}
 </ul>
 
 
+<Calendar tasks={tasks} />
+</main>
+
+</div>
 
      {/* <span className={`badge ${task.prioridade}`}>
         {task.prioridade}
@@ -335,7 +409,7 @@ ${task.concluida ? "feito" : ""}`}
         ))}
       </AnimatePresence> */}
 
-      <Calendar tasks={tasks} />
+
     </>
   );
 }
