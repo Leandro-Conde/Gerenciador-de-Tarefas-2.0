@@ -44,35 +44,22 @@ export default function Home() {
 
         <button onClick={() => setPagina("Calendário")}>Calendário</button>
 
-
-
-
       </header>
 
-      {menuAberto && (
-        <aside className="sidebar">
-          <button onClick={() => setPagina("tarefas")}>Tarefas</button>
-          <button onClick={() => setPagina("Empresarial")}>Empresarial</button>
-          <button onClick={() => setView("lista")}>Lista</button>
-          <button onClick={() => setView("calendario")}>Calendário</button>
+      <div 
+          className={`overlay ${menuAberto ? "ativo" : ""}`} 
+          onClick={() => setMenuAberto(false)}
+        />
+
+
+        <aside className={`sidebar ${menuAberto ? "ativo" : ""}`}>
+          <button onClick={() => {setPagina("Tarefas"); setMenuAberto(false);}}>Tarefas</button>
+          <button onClick={() => {setPagina("Empresarial"); setMenuAberto(false);}}>Empresarial</button>
+          <button onClick={() => {setView("lista"); setMenuAberto(false);}}>Lista</button>
+          <button onClick={() => {setView("calendario"); setMenuAberto(false);}}>Calendário</button>
         </aside>
-      )}
+      
 
-
-     {/* <main className="conteudo">
-
-      <aside className="historico">
-      <h3>Historico</h3>
-      <ul>
-        {historico.map(item => (
-          <li key={item.id + item.dataAcao}>
-            {item.titulo} - {item.status}
-          </li>
-        ))}
-      </ul>
-      </aside>
-
-      </main>*/}
 
 
       <main className="container">

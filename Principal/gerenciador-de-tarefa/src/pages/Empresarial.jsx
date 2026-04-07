@@ -147,8 +147,15 @@ export default function Empresarial() {
 
   }
 
+  function limparHistorico() {
+    if (!window.confirm("Tem certeza que quer apagar o histórico?")) return;
+  
+    setHistorico([]);
+    localStorage.removeItem("historico_tasks");
+  }
+
   function editDescricao(id) {
-    const nova = prompt("Digite a descrição (máx 100 caracteres):");
+    const nova = prompt("Digite a descrição (máx 180 caracteres):");
   
     if (!nova) return;
   
@@ -225,6 +232,10 @@ function editTempo(id) {
       <aside className={`historico ${abrirHistorico ? "ativo" : ""}`}>
 
         <h3>Histórico</h3>
+
+        <button onClick={limparHistorico} className="btn-limpar-historico">
+          Limpar
+        </button>
 
           <ul>
             {historico.map(item => (
