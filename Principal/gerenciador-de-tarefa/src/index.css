@@ -566,40 +566,28 @@ footer {
 
       .layout {
         display: flex;
-        justify-content: center; /* 👈 CENTRALIZA TUDO */
-        gap: 1.5rem;
-        padding: 20px;
+        justify-content: center;
+        align-items: flex-start;
+    
+        width: 100%;
     }
 
     .conteudo {
         display: grid;
         grid-template-columns: 320px 1fr;
-        grid-template-rows: auto auto; 
+        grid-template-rows: auto auto;
         gap: 20px;
-        min-height: 10vh; 
-
-        padding-right: 80px;
-        width: 100%;
+    
+        max-width: 1200px; /* 👈 ISSO AQUI CENTRALIZA DE VERDADE */
+        margin: 0 auto;     /* 👈 ISSO AQUI EMPURRA PRO CENTRO */
     }
 
-      form {
-        grid-column: 1;
-      }
-
-      .area-inferior {
-        grid-column: 2;
-        display: grid;
-        grid-template-columns: 360px 1fr;
-        gap: 20px;
-        align-items: center;
-        height: 100%; 
-    }
+     
 
     .area-inferior ul {
         grid-column: 1;
         width: 100%;
         height: 600px;
-        left: -90;
 
         max-height: 500px; 
     overflow-y: auto; 
@@ -616,13 +604,7 @@ footer {
         border-radius: 10px;
     }
     
-    .calendar {
-        grid-column: 2;
-        width: 20vw;
-        height: 520px;
-        
-        
-    }
+    
       .historico {
         position: fixed;
         top: 0;
