@@ -38,7 +38,7 @@ export default function Empresarial() {
     localStorage.setItem("tasks_empresa", JSON.stringify(tasks));
   }, [tasks]);
 
-  useEffect(() => {
+ /* useEffect(() => {
     const concluidas = tasks.filter(t => t.concluida && !t.jaSalva);
 
     if (concluidas.length > 0) {
@@ -57,41 +57,48 @@ export default function Empresarial() {
         )
       );
     }
-  }, [tasks]);
+  }, [tasks]);*/
 
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTasks(prev =>
         prev.map(t => {
-          if (t.timerAtivo) {
-            if  (t.timerAtivo && t.tempoRestante !== null) {
-            return { ...t, tempoRestante: t.tempoRestante - 1 };
-          }
-
-          if (t.timerAtivo && t.tempoRestante <= 1) {
-            const finalizada = { ...t, 
+          if (!t.timerAtivo || t.tempoRestante == null) return t;
+  
+          // acabou
+          if (t.tempoRestante <= 1) {
+            const finalizada = {
+              ...t,
               tempoRestante: 0,
               timerAtivo: false,
-              esgotado: true, 
+              esgotado: true,
               concluida: true
             };
-
+  
             setHistorico(prev => [
               ...prev,
-              {...finalizada, status: "concluida", dataAcao: new Date() }
+              {
+                ...finalizada,
+                status: "concluida",
+                dataAcao: new Date()
+              }
             ]);
-
+  
             return finalizada;
           }
-        }
-            return t;
-          })
-        );
-  }, 1000);
-
-  return () => clearInterval(interval);
- }, []);
+  
+          // continua
+          return {
+            ...t,
+            tempoRestante: t.tempoRestante - 1
+          };
+        })
+      );
+    }, 1000);
+  
+    return () => clearInterval(interval);
+  }, []);
 
 
   function addTask(e) {
@@ -152,7 +159,7 @@ export default function Empresarial() {
   
     setHistorico([]);
     localStorage.removeItem("historico_tasks");
-  }
+  } 
 
   function editDescricao(id) {
     const nova = prompt("Digite a descrição (máx 180 caracteres):");
@@ -229,22 +236,47 @@ function editTempo(id) {
 
       
     <div className="layout">
-      <aside className={`historico ${abrirHistorico ? "ativo" : ""}`}>
+    <aside className={`historico ${abrirHistorico ? "ativo" : ""}`}>
 
-        <h3>Histórico</h3>
+     <h3>Histórico</h3>
 
-        <button onClick={limparHistorico} className="btn-limpar-historico">
-          Limpar
-        </button>
+      <button onClick={limparHistorico} className="btn-limpar-historico">
+        Limpar
+      </button>
 
-          <ul>
-            {historico.map(item => (
-              <li key={item.id + item.dataAcao}>
-                {item.titulo} - {item.status}
-              </li>
-            ))}
-          </ul>
-           </aside>
+      {historico.length === 0 ? (
+        <p>Nenhum histórico ainda</p>
+      ) : (
+        <ul>
+          {historico.map(item => (
+            <li key={item.id + item.dataAcao}
+            className={`prioridade-${item.prioridade}`}>
+
+              <strong>{item.titulo}</strong>
+              
+              <p>{item.status}</p>
+
+              {item.empresa && (
+                <p>Empresa: {item.empresa}</p>
+              )}
+
+              {item.data && (
+                <p>
+                  Criada em: {new Date(item.data).toLocaleDateString("pt-BR")}
+                </p>
+              )}
+
+              {item.dataAcao && (
+                <p>
+                  ação em: {new Date(item.dataAcao).toLocaleDateString("pt-BR")}{" "}
+                  às {new Date(item.dataAcao).toLocaleTimeString("pt-BR")}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </aside>
         
             <main className="conteudo">
 
@@ -295,7 +327,7 @@ function editTempo(id) {
       </form>
 
 
-
+    <div className="area-inferior">
       <ul>
   {tarefasFiltradas.map(task => (
     <motion.li
@@ -404,6 +436,8 @@ ${task.concluida ? "feito" : ""}`}
 
 
 <Calendar tasks={tasks} />
+
+</div>
 </main>
 
 </div>

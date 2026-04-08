@@ -10,6 +10,7 @@
     --bg: #f5f5f5;
     --text: #1a1a1a;
     --fundo-card: #c42149;
+    --letra-um: #1a1a1a;
     --letra-dois: #ffffff;
     --botao: #721347;
     --card: #ffffff;
@@ -44,6 +45,9 @@ body{
     left: 0;
     opacity: 0;
 
+    display: flex;
+    flex-direction: column;
+
     width: 220px;
     height: 100vh;
 
@@ -58,13 +62,30 @@ body{
     z-index: 2000;
 }
 .historico ul li {
-    background: #0000003b;
+    border-radius: 4px;
     color: #fff;
     border-radius: 4px;
 }
 
 .historico h3 {
     color: white;
+}
+
+.historico li {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.historico li strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.historico li p {
+    margin: 2px 0;
+    font-size: 0.8rem;
+    opacity: 0.9;
 }
 
 h2 {
@@ -152,7 +173,7 @@ li {
     transform: rotate(90deg) scale(1.1);
 }
 
-.sidebar {
+/*.sidebar {
     position: fixed;
     display: flex;
     gap: 10px;
@@ -167,7 +188,7 @@ li {
     display: flex;
     flex-direction: column;
     padding: 20px;
-}
+}*/
 
 .sidebar button {
     transform: translateX(-20px);
@@ -248,6 +269,8 @@ button:hover {
     flex-direction: column;
     gap: 1.5rem;
 }*/
+
+
 
 
 form {
@@ -473,7 +496,7 @@ footer {
 @media (max-width: 768px) {
   
     .historico {
-      position: fixed;
+     position: fixed;
       left: -100%;
       top: 0;
       height: 100%;
@@ -500,26 +523,28 @@ footer {
 
   }
 
-@media (min-width: 1024px) {
+  @media (min-width: 1024px) {
+
+
     .descricao {
       position: absolute;
-  
-      left: -260px; /* 👈 joga pra fora */
-      top: 50%;
-      transform: translateY(-50%);
-  
+
+      left: -410px; 
+      top: 20px;   
+      transform: none;
+
       width: 220px;
       text-align: center;
-  
-      background: #535353;
+
+      background: #770c04;
       color: #fff;
-  
+
       padding: 12px 16px;
       border-radius: 16px;
-  
+
       font-size: 0.9rem;
       line-height: 1.4;
-  
+
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 
       transition: all 0.3s ease;
@@ -536,21 +561,68 @@ footer {
         width: 14px;
         height: 14px;
     
-        background: #535353;
+        background: #770c04;
       }
 
-      /*.container {
-          display: flex;
-          height: 100vh;
-      }*/
+      .layout {
+        display: flex;
+        justify-content: center; /* 👈 CENTRALIZA TUDO */
+        gap: 1.5rem;
+        padding: 20px;
+    }
 
-      .conteudo{
-          flex: 1;
-          padding: 20px;
-          min-width: 900px;
-          margin: 0 auto;
+    .conteudo {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        grid-template-rows: auto auto; 
+        gap: 20px;
+        min-height: 10vh; 
+
+        padding-right: 80px;
+        width: 100%;
+    }
+
+      form {
+        grid-column: 1;
       }
 
+      .area-inferior {
+        grid-column: 2;
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 20px;
+        align-items: center;
+        height: 100%; 
+    }
+
+    .area-inferior ul {
+        grid-column: 1;
+        width: 100%;
+        height: 600px;
+        left: -90;
+
+        max-height: 500px; 
+    overflow-y: auto; 
+
+    padding-right: 5px; 
+    }
+
+    .area-inferior ul::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .area-inferior ul::-webkit-scrollbar-thumb {
+        background: #721347;
+        border-radius: 10px;
+    }
+    
+    .calendar {
+        grid-column: 2;
+        width: 20vw;
+        height: 520px;
+        
+        
+    }
       .historico {
         position: fixed;
         top: 0;
