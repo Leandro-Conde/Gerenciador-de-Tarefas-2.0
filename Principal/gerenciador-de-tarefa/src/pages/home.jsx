@@ -38,9 +38,15 @@ export default function Home() {
           {dark ? "Claro" : "Escuro"}
         </button>
 
-        <button className="menu" onClick={() => setMenuAberto(!menuAberto)}>
+        <button 
+          className="menu" 
+          onClick={() => {
+            setMenuAberto(prev => !prev);
+            setAbrirHistorico(false); // fecha histórico
+          }}
+        >
           ☰
-        </button>
+</button>
 
         <button onClick={() => setPagina("Calendário")}>Calendário</button>
 

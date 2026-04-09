@@ -64,7 +64,6 @@ body{
 .historico ul li {
     border-radius: 4px;
     color: #fff;
-    border-radius: 4px;
 }
 
 .historico h3 {
@@ -90,6 +89,7 @@ body{
 
 h2 {
     padding: 10px;
+    
 }
 
 li {
@@ -200,6 +200,8 @@ li {
     transform: translateX(0);
     opacity: 1;
 }
+
+
 
 .sidebar button:nth-child(1) { transition-delay: 0.1s; }
 .sidebar button:nth-child(2) { transition-delay: 0.2s; }
@@ -431,6 +433,8 @@ ul {
     min-width: 600px;
     margin: 0 auto;
     background-color: var(--main);
+    
+    
 }
 
 footer {
@@ -458,11 +462,6 @@ footer {
         color: var(--text);
     }
 
-    main {
-        background-color: rgb(168, 37, 44);
-        border-radius: 20px;
-        box-shadow: 2px 2px rgba(0, 0, 0, 0.555);
-    }
 
     .dark > main {
         background: var(--main);
@@ -504,8 +503,22 @@ footer {
       transition: 0.3s;
       z-index: 999;
       background-color: #1d1d1d;
+
+      overflow-y: auto; /* SCROLL */
+  -webkit-overflow-scrolling: touch; /* scroll suave no mobile */
     }
   
+    .area-inferior::-webkit-scrollbar,
+.historico::-webkit-scrollbar {
+  width: 6px;
+}
+
+.area-inferior::-webkit-scrollbar-thumb,
+.historico::-webkit-scrollbar-thumb {
+  background: #721347;
+  border-radius: 10px;
+}
+
     .historico.ativo {
       left: 0;
       padding-top: 20px;
@@ -519,6 +532,7 @@ footer {
     .calendar {
         background-color: var(--fundo-card);
         color: white;
+        
     }
 
   }
@@ -529,8 +543,9 @@ footer {
     .descricao {
       position: absolute;
 
-      left: -410px; 
-      top: 20px;   
+      left: 100%; 
+      top: 10px; 
+      margin-left: 10px;  
       transform: none;
 
       width: 220px;
@@ -554,7 +569,7 @@ footer {
         content: "";
         position: absolute;
     
-        right: -8px;
+        right: 193px;
         top: 50%;
         transform: translateY(-50%) rotate(45deg);
     
@@ -569,28 +584,42 @@ footer {
         justify-content: center;
         align-items: flex-start;
     
-        width: 100%;
+        width: 60%;
+        height: 20vh;
+        margin-top: 50px;
+        
+
     }
 
+    main {
+        background-color: rgb(168, 37, 44);
+        border-radius: 20px;
+        box-shadow: 2px 2px rgba(0, 0, 0, 0.555);
+    
+        width: 50vw;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
     .conteudo {
         display: grid;
         grid-template-columns: 320px 1fr;
         grid-template-rows: auto auto;
         gap: 20px;
     
-        max-width: 1200px; /* 👈 ISSO AQUI CENTRALIZA DE VERDADE */
-        margin: 0 auto;     /* 👈 ISSO AQUI EMPURRA PRO CENTRO */
+        
+        max-width: 1200px; /* ISSO AQUI CENTRALIZA*/
+        margin: 10px auto;     /*ISSO AQUI EMPURRA PRO CENTRO */
     }
-
      
 
     .area-inferior ul {
         grid-column: 1;
         width: 100%;
-        height: 600px;
+        
 
         max-height: 500px; 
-    overflow-y: auto; 
+    overflow-y: scroll; 
 
     padding-right: 5px; 
     }
@@ -602,6 +631,11 @@ footer {
     .area-inferior ul::-webkit-scrollbar-thumb {
         background: #721347;
         border-radius: 10px;
+    }
+
+    .calendar {
+        color: white; 
+        padding-right: 5px;
     }
     
     
@@ -626,6 +660,10 @@ footer {
         padding-bottom: 20px;
         text-align: center;
     }
+
+    h2 {
+        text-align: center;
+    }
   
 
       /*.layout {
@@ -633,5 +671,9 @@ footer {
         min-height: 100vh;
       }*/
 
+
+    footer {
+        padding-top: 850px;
+    }
 
   }

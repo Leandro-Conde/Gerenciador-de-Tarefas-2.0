@@ -19,6 +19,7 @@ export default function Empresarial() {
   const [descricao, setDescricao] = useState("");
   const [historico, setHistorico] = useState([]);
   const [abrirHistorico, setAbrirHistorico] = useState(false);
+  const [abrirMenu, setAbrirMenu] = useState(false);
 
   
 
@@ -76,15 +77,6 @@ export default function Empresarial() {
               concluida: true
             };
   
-            setHistorico(prev => [
-              ...prev,
-              {
-                ...finalizada,
-                status: "concluida",
-                dataAcao: new Date()
-              }
-            ]);
-  
             return finalizada;
           }
   
@@ -129,29 +121,62 @@ export default function Empresarial() {
     setPrioridade("media");
     setEmpresa("");
     setTipo("suporte");
+
+    const tempoNum = tempoInput ? Number(tempoInput) : null;
+
+if (tempoNum !== null && tempoNum <= 0) {
+  alert("Tempo tem que ser maior que 0");
+  return;
+}
   }
 
   function toggleTask(id) {
-    setTasks(tasks.map(t =>
-      t.id === id
-        ? { ...t, concluida: !t.concluida, timerAtivo: false }
-        : t
-    ));
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === id
+          ? { ...t, concluida: !t.concluida, timerAtivo: false }
+          : t
+      )
+    );
   }
 
   function deleteTask(id) {
-    setTasks(tasks.filter(t => t.id !== id));
-    const taskRemovida = tasks.find(t => t.id === id);
+    setTasks(prev => {
+      const taskRemovida = prev.find(t => t.id === id);
+  
+      if (!taskRemovida) return prev;
+  
+      // salva no histórico corretamente
+      setHistorico(h => [
+        ...h,
+        {
+          ...taskRemovida,
+          status: "excluida",
+          dataAcao: new Date()
+        }
+      ]);
+  
+      // remove do estado
+      return prev.filter(t => t.id !== id);
+    });
+  }
 
-    if (!taskRemovida) return;
-
-    setTasks(prev => prev.filter(t => t.id !== id));
-
-    setHistorico(prev => [
-      ...prev,
-      { ...taskRemovida, status: "excluida", dataAcao: new Date() }
-    ]);
-
+  function concluirTask(id) {
+    setTasks(prev => {
+      const task = prev.find(t => t.id === id);
+      if (!task) return prev;
+  
+      setHistorico(h => [
+        ...h,
+        {
+          ...task,
+          status: "concluida",
+          dataAcao: new Date()
+        }
+      ]);
+  
+      return prev.filter(t => t.id !== id);
+    });
   }
 
   function limparHistorico() {
@@ -190,13 +215,35 @@ export default function Empresarial() {
   }
 
 
-  const tarefasFiltradas = tasks.filter(t => {
-    if (filtro === "pendentes") return !t.concluida;
-    if (filtro === "concluidas") return t.concluida;
-    return true;
+  const ordenarTarefas = (tarefas) => {
+    const prioridadePeso = {
+      alta: 3,
+      media: 2,
+      baixa: 1
+    };
+  
+    return tarefas.sort((a, b) => {
+      if (prioridadePeso[a.prioridade] !== prioridadePeso[b.prioridade]) {
+        return prioridadePeso[b.prioridade] - prioridadePeso[a.prioridade];
+      }
+  
+      if (a.prioridade === "alta" && b.prioridade === "alta") {
+        const tempoA = a.tempoRestante ?? Infinity;
+        const tempoB = b.tempoRestante ?? Infinity;
+        return tempoA - tempoB;
+      }
+  
+      return 0;
+    });
+  };
 
-
-  });
+  const tarefasFiltradas = ordenarTarefas(
+    [...tasks].filter(t => {
+      if (filtro === "pendentes") return !t.concluida;
+      if (filtro === "concluidas") return t.concluida;
+      return true;
+    })
+  );
 
   const formatarTempo = (s) => {
     const min = Math.floor(s / 60);
@@ -204,21 +251,29 @@ export default function Empresarial() {
     return `${min}:${seg.toString().padStart(2, "0")}`;
   };
   
-function editTempo(id) {
-  const novoTempo = prompt("Novo tempo em segundos");
- if (!novoTempo) return;
-
- setTasks(tasks.map(t =>
-  t.id === id ? {
-    ...t,
-    tempo: Number(novoTempo),
-    tempoRestante: Number(novoTempo),
-    esgotado: false, 
-    timerAtivo: true
+  function editTempo(id) {
+    const novoTempo = prompt("Novo tempo em segundos");
+  
+    if (!novoTempo) return;
+  
+    const tempoNum = Number(novoTempo);
+  
+    // VALIDAÇÃO
+    if (isNaN(tempoNum) || tempoNum <= 0) {
+      alert("Digite um tempo válido (maior que 0, né gênio)");
+      return;
+    }
+  
+    setTasks(tasks.map(t =>
+      t.id === id ? {
+        ...t,
+        tempo: tempoNum,
+        tempoRestante: tempoNum,
+        esgotado: false,
+        timerAtivo: true
+      } : t
+    ));
   }
-  : t
- ));
-}
 
 
   function toggleTimer(id) {
@@ -281,7 +336,7 @@ function editTempo(id) {
             <main className="conteudo">
 
             <form onSubmit={addTask}>
-        <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título da tarefa"/>
+        <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Título da tarefa (Obrigatório)"/>
         <input type="date" value={data} onChange={e => setData(e.target.value)} />
 
         <select value={prioridade} onChange={e => setPrioridade(e.target.value)}>
@@ -299,7 +354,7 @@ function editTempo(id) {
 
         <input
           type="number"
-          placeholder="Tempo (segundos) (ex: 3600 = 1 horas)"
+          placeholder="Tempo (segundos) (ex: 3600 = 1 hora)"
           value={tempoInput}
           onChange={e => setTempoInput(e.target.value)}
           />
@@ -315,7 +370,7 @@ function editTempo(id) {
         <button type="button" onClick={() => setFiltro("todas")}>Todas</button>
         <button type="button" onClick={() => setFiltro("pendentes")}>Pendentes</button>
         <button type="button" onClick={() => setFiltro("concluidas")}>Concluídas</button>
-        <button type="button" onClick={() => setAbrirHistorico(prev => !prev)}>📜</button>
+        <button type="button" onClick={() => {setAbrirHistorico(prev => !prev); setAbrirMenu(false);}}>📜</button>
         </div> 
         <button type="submit">Adicionar</button>
         
@@ -394,7 +449,7 @@ function editTempo(id) {
       {task.concluida && (
       <button onClick={(e) => {
         e.stopPropagation();
-        deleteTask(task.id);
+        concluirTask(task.id);
       }}>
         Concluir
 
@@ -410,6 +465,7 @@ function editTempo(id) {
         >
           💬
         </button>
+
 
 
 
