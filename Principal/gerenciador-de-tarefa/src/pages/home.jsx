@@ -4,7 +4,13 @@ import Empresarial from "./Empresarial";
 import Dashboard from "./Dashboard";
 import Calendar from "../components/Calendar";
 import { motion } from "framer-motion";
+import { createClient } from '@supabase/supabase-js'
 
+
+const supabaseUrl = 'https://vmglciwaonssdv1rbgqk.supabase.co'
+const supabaseKey = 'sb_publishable_SUA_KEY_AQUI'
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function Home() {
   
