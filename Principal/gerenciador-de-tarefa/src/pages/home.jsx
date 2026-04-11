@@ -4,6 +4,7 @@ import Empresarial from "./Empresarial";
 import Dashboard from "./Dashboard";
 import Calendar from "../components/Calendar";
 import { motion } from "framer-motion";
+import { supabase } from './services/supabase'
 
 export default function Home() {
   
