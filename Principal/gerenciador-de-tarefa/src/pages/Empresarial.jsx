@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Calendar from "../components/Calendar";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
+import { supabase } from '../services/supabase'
 
 export default function Empresarial() {
 
@@ -24,41 +25,19 @@ export default function Empresarial() {
   
 
   useEffect(() => {
-    const stored = localStorage.getItem("tasks_empresa");
-    if (stored) setTasks(JSON.parse(stored));
+    buscarTasks(); //supabase
 
     const hist = localStorage.getItem("historico_tasks");
     if (hist) setHistorico(JSON.parse(hist));
-  }, []);
+  }, []); //localStorage
 
   useEffect(() => {
     localStorage.setItem("historico_tasks", JSON.stringify(historico));
   }, [historico]);
 
-  useEffect(() => {
+  {/*useEffect(() => {
     localStorage.setItem("tasks_empresa", JSON.stringify(tasks));
-  }, [tasks]);
-
- /* useEffect(() => {
-    const concluidas = tasks.filter(t => t.concluida && !t.jaSalva);
-
-    if (concluidas.length > 0) {
-      setHistorico(prev => [
-        ...prev,
-        ...concluidas.map(t => ({
-          ...t,
-          status: "concluida",
-          dataAcao: new Date().toISOString()
-        }))
-      ]);
-
-      setTasks(prev =>
-        prev.map(t =>
-          t.concluida ? { ...t, jaSalva: true } : t
-        )
-      );
-    }
-  }, [tasks]);*/
+  }, [tasks]);*/}
 
 
   useEffect(() => {
@@ -93,91 +72,125 @@ export default function Empresarial() {
   }, []);
 
 
-  function addTask(e) {
+  async function addTask(e) {
     e.preventDefault();
 
-    if (!titulo || !data) return alert("Preencha todas as informações");
+    if (!titulo || !data) {
+       alert("Preencha todas as informações");
+       return;
+    }
 
+        const tempoNum = tempoInput ? Number(tempoInput) : null;
+
+    if (tempoNum !== null && tempoNum <= 0) {
+      alert("Tempo tem que ser maior que 0");
+      return;
+    }
     
-
-    const nova = {
-      id: Date.now(),
+    const { error } = await supabase
+    .from('Tarefas')
+    .insert([{
       titulo,
       prioridade,
       data,
       empresa,
       tipo,
       concluida: false,
-      tempo: tempoInput ? Number(tempoInput) : null,
-      tempoRestante: tempoInput ? Number(tempoInput) : null,
-      timerAtivo: tempoInput ? true : false,
+      tempo: tempoNum,
+      tempoRestante: tempoNum,
+      timerAtivo: tempoNum ? true : false,
       esgotado: false
-    };
+    }]);
 
-    setTasks(prev => [...prev, nova]);
+    console.log("RESULTADO INSERT:", error);
+
+    if (!error) {
+      buscarTasks();
+    }
+
+    //setTasks(prev => [...prev, nova]);
 
     setTitulo("");
     setData("");
     setPrioridade("media");
     setEmpresa("");
     setTipo("suporte");
+    setTempoInput("");
 
-    const tempoNum = tempoInput ? Number(tempoInput) : null;
+  }
 
-if (tempoNum !== null && tempoNum <= 0) {
-  alert("Tempo tem que ser maior que 0");
-  return;
+  async function toggleTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+  
+    const { error } = await supabase
+      .from('Tarefas')
+      .update({ 
+        concluida: !task.concluida,
+        timerAtivo: false
+      })
+      .eq('id', id);
+  
+    if (error) {
+      console.error(error);
+    } else {
+      buscarTasks();
+    }
+  }
+
+  async function deleteTask(id) {
+    const taskRemovida = tasks.find(t => t.id === id);
+  
+    if (!taskRemovida) return;
+  
+    // salva no histórico (LOCAL)
+    setHistorico(h => [
+      ...h,
+      {
+        ...taskRemovida,
+        status: "excluida",
+        dataAcao: new Date()
+      }
+    ]);
+  
+    // deleta no banco (SUPABASE)
+    const { error } = await supabase
+      .from('Tarefas')
+      .delete()
+      .eq('id', id);
+  
+    if (error) {
+      console.error("Erro ao deletar:", error);
+    } else {
+      buscarTasks(); // recarrega do banco
+    }
+  }
+
+
+  async function deleteTaskSemHistorico(id) {
+    await supabase
+      .from('Tarefas')
+      .delete()
+      .eq('id', id);
+  
+    buscarTasks();
+  }
+
+  async function concluirTask(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+
+  setHistorico(h => [
+    ...h,
+    {
+      ...task,
+      status: "concluida",
+      dataAcao: new Date()
+    }
+  ]);
+
+  await deleteTaskSemHistorico(id);
 }
-  }
-
-  function toggleTask(id) {
-    setTasks(prev =>
-      prev.map(t =>
-        t.id === id
-          ? { ...t, concluida: !t.concluida, timerAtivo: false }
-          : t
-      )
-    );
-  }
-
-  function deleteTask(id) {
-    setTasks(prev => {
-      const taskRemovida = prev.find(t => t.id === id);
-  
-      if (!taskRemovida) return prev;
-  
-      // salva no histórico corretamente
-      setHistorico(h => [
-        ...h,
-        {
-          ...taskRemovida,
-          status: "excluida",
-          dataAcao: new Date()
-        }
-      ]);
-  
-      // remove do estado
-      return prev.filter(t => t.id !== id);
-    });
-  }
-
-  function concluirTask(id) {
-    setTasks(prev => {
-      const task = prev.find(t => t.id === id);
-      if (!task) return prev;
-  
-      setHistorico(h => [
-        ...h,
-        {
-          ...task,
-          status: "concluida",
-          dataAcao: new Date()
-        }
-      ]);
-  
-      return prev.filter(t => t.id !== id);
-    });
-  }
 
   function limparHistorico() {
     if (!window.confirm("Tem certeza que quer apagar o histórico?")) return;
@@ -212,6 +225,19 @@ if (tempoNum !== null && tempoNum <= 0) {
 
   function clearCompleted() {
     setTasks(tasks.filter(t => !t.concluida));
+  }
+
+  async function buscarTasks() {
+    const { data, error } = await supabase
+    .from('Tarefas')
+    .select('*')
+    .order('id', { ascending: false });
+
+    if (error) {
+      console.error('ERRO AO BUSCAR:', error);
+    } else {
+      setTasks(data);
+    }
   }
 
 
