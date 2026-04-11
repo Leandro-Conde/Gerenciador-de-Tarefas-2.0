@@ -46,23 +46,28 @@ export default function Empresarial() {
         prev.map(t => {
           if (!t.timerAtivo || t.tempoRestante == null) return t;
   
-          // acabou
-          if (t.tempoRestante <= 1) {
-            const finalizada = {
+          const novoTempo = t.tempoRestante - 1;
+  
+          // terminou
+          if (novoTempo <= 0) {
+            salvarTempoNoBanco(t.id, 0, true);
+            return {
               ...t,
               tempoRestante: 0,
               timerAtivo: false,
               esgotado: true,
               concluida: true
             };
-  
-            return finalizada;
           }
   
-          // continua
+          // a cada 5 segundos salva
+          if (novoTempo % 5 === 0) {
+            salvarTempoNoBanco(t.id, novoTempo, false);
+          }
+  
           return {
             ...t,
-            tempoRestante: t.tempoRestante - 1
+            tempoRestante: novoTempo
           };
         })
       );
@@ -71,6 +76,21 @@ export default function Empresarial() {
     return () => clearInterval(interval);
   }, []);
 
+  async function salvarTempoNoBanco(id, tempoRestante, finalizado) {
+    const { error } = await supabase
+      .from('Tarefas')
+      .update({
+        tempoRestante: tempoRestante,
+        timerAtivo: finalizado ? false : true,
+        esgotado: finalizado,
+        concluida: finalizado
+      })
+      .eq('id', id);
+  
+    if (error) {
+      console.error("Erro ao salvar tempo:", error);
+    }
+  }
 
   async function addTask(e) {
     e.preventDefault();
@@ -96,9 +116,9 @@ export default function Empresarial() {
       empresa,
       tipo,
       concluida: false,
-      tempo: tempoNum,
-      tempoRestante: tempoNum,
-      timerAtivo: tempoNum ? true : false,
+      tempo: tempoNum ?? null,
+      tempoRestante: tempoNum ?? null,
+      timerAtivo: tempoNum !== false,
       esgotado: false
     }]);
 
@@ -199,7 +219,7 @@ export default function Empresarial() {
     localStorage.removeItem("historico_tasks");
   } 
 
-  function editDescricao(id) {
+  async function editDescricao(id) {
     const nova = prompt("Digite a descrição (máx 180 caracteres):");
   
     if (!nova) return;
@@ -209,18 +229,32 @@ export default function Empresarial() {
       return;
     }
   
-    setTasks(tasks.map(t =>
-      t.id === id ? { ...t, descricao: nova } : t
-    ));
+    const { error } = await supabase
+      .from('Tarefas')
+      .update({ descricao: nova })
+      .eq('id', id);
+  
+    if (error) {
+      console.error("Erro ao editar descrição:", error);
+    } else {
+      buscarTasks();
+    }
   }
 
-  function editTask(id) {
+  async function editTask(id) {
     const novo = prompt("Novo título:");
     if (!novo) return;
-
-    setTasks(tasks.map(t =>
-      t.id === id ? { ...t, titulo: novo } : t
-    ));
+  
+    const { error } = await supabase
+      .from('Tarefas')
+      .update({ titulo: novo })
+      .eq('id', id);
+  
+    if (error) {
+      console.error("Erro ao editar título:", error);
+    } else {
+      buscarTasks();
+    }
   }
 
   function clearCompleted() {
@@ -277,28 +311,33 @@ export default function Empresarial() {
     return `${min}:${seg.toString().padStart(2, "0")}`;
   };
   
-  function editTempo(id) {
+  async function editTempo(id) {
     const novoTempo = prompt("Novo tempo em segundos");
   
     if (!novoTempo) return;
   
     const tempoNum = Number(novoTempo);
   
-    // VALIDAÇÃO
     if (isNaN(tempoNum) || tempoNum <= 0) {
-      alert("Digite um tempo válido (maior que 0, né gênio)");
+      alert("Digite um tempo válido");
       return;
     }
   
-    setTasks(tasks.map(t =>
-      t.id === id ? {
-        ...t,
+    const { error } = await supabase
+      .from('Tarefas')
+      .update({
         tempo: tempoNum,
         tempoRestante: tempoNum,
         esgotado: false,
         timerAtivo: true
-      } : t
-    ));
+      })
+      .eq('id', id);
+  
+    if (error) {
+      console.error("Erro ao editar tempo:", error);
+    } else {
+      buscarTasks();
+    }
   }
 
 
