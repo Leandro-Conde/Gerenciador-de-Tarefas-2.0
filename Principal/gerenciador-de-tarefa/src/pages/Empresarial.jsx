@@ -137,6 +137,8 @@ export default function Empresarial() {
     setTipo("suporte");
     setTempoInput("");
 
+
+    user_id: (await supabase.auth.getUser()).data.user.id
   }
 
   async function toggleTask(id) {
