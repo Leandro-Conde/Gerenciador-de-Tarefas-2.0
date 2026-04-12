@@ -160,6 +160,8 @@ export default function Empresarial() {
     }
   }
 
+  
+
   async function deleteTask(id) {
     const taskRemovida = tasks.find(t => t.id === id);
   
