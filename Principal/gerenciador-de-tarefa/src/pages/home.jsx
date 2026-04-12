@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Pessoal from "./Pessoal";
 import Empresarial from "./Empresarial";
 import Dashboard from "./Dashboard";
@@ -12,6 +12,7 @@ export default function Home() {
   const [menuAberto, setMenuAberto] = useState(true);
   const [pagina, setPagina] = useState("tarefas");
   const [view, setView] = useState("lista");
+  const [abrirHistorico, setAbrirHistorico] = useState(false);
 
   useEffect(() => {
     const tema = localStorage.getItem("tema");
