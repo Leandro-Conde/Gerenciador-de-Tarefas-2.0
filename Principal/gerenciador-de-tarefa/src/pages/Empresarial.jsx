@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from '../services/supabase'
 
+
 export default function Empresarial() {
 
  
@@ -119,7 +120,8 @@ export default function Empresarial() {
       tempo: tempoNum ?? null,
       tempoRestante: tempoNum ?? null,
       timerAtivo: tempoNum !== false,
-      esgotado: false
+      esgotado: false,
+      user_id: userData.user.id
     }]);
 
     console.log("RESULTADO INSERT:", error);
@@ -138,7 +140,6 @@ export default function Empresarial() {
     setTempoInput("");
 
 
-    user_id: (await supabase.auth.getUser()).data.user.id
   }
 
   async function toggleTask(id) {
