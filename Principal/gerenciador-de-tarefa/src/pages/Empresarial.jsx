@@ -154,10 +154,12 @@ if (!userData?.user) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
   
+    const novoEstado = !task.concluida;
+  
     const { error } = await supabase
       .from('Tarefas')
       .update({ 
-        concluida: !task.concluida,
+        concluida: novoEstado,
         timerAtivo: false
       })
       .eq('id', id);
@@ -165,7 +167,12 @@ if (!userData?.user) {
     if (error) {
       console.error(error);
     } else {
-      buscarTasks();
+      // atualização local imediata (evita delay visual)
+      setTasks(prev =>
+        prev.map(t =>
+          t.id === id ? { ...t, concluida: novoEstado } : t
+        )
+      );
     }
   }
 
@@ -173,10 +180,12 @@ if (!userData?.user) {
 
   async function deleteTask(id) {
     const taskRemovida = tasks.find(t => t.id === id);
-  
     if (!taskRemovida) return;
   
-    // salva no histórico (LOCAL)
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData?.user) return;
+  
+    // salva no histórico
     setHistorico(h => [
       ...h,
       {
@@ -186,7 +195,22 @@ if (!userData?.user) {
       }
     ]);
   
-    // deleta no banco (SUPABASE)
+    const { error } = await supabase
+      .from('Tarefas')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userData.user.id);
+  
+    if (error) {
+      console.error("Erro ao deletar:", error);
+    } else {
+      // remove da tela na hora (sem delay)
+      setTasks(prev => prev.filter(t => t.id !== id));
+    }
+  }
+
+
+  async function deleteTaskSemHistorico(id) {
     const { error } = await supabase
       .from('Tarefas')
       .delete()
@@ -194,36 +218,32 @@ if (!userData?.user) {
   
     if (error) {
       console.error("Erro ao deletar:", error);
-    } else {
-      buscarTasks(); // recarrega do banco
+      alert("Erro ao concluir tarefa");
+      return false;
     }
-  }
-
-
-  async function deleteTaskSemHistorico(id) {
-    await supabase
-      .from('Tarefas')
-      .delete()
-      .eq('id', id);
   
-    buscarTasks();
+    return true;
   }
 
   async function concluirTask(id) {
-  const task = tasks.find(t => t.id === id);
-  if (!task) return;
-
-  setHistorico(h => [
-    ...h,
-    {
-      ...task,
-      status: "concluida",
-      dataAcao: new Date()
-    }
-  ]);
-
-  await deleteTaskSemHistorico(id);
-}
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+  
+    const sucesso = await deleteTaskSemHistorico(id);
+  
+    if (!sucesso) return;
+  
+    setHistorico(h => [
+      ...h,
+      {
+        ...task,
+        status: "concluida",
+        dataAcao: new Date()
+      }
+    ]);
+  
+    buscarTasks();
+  }
 
   function limparHistorico() {
     if (!window.confirm("Tem certeza que quer apagar o histórico?")) return;
@@ -357,10 +377,22 @@ if (!userData?.user) {
     if (error) {
       console.error("Erro ao editar tempo:", error);
     } else {
-      buscarTasks();
+      // ATUALIZA NA HORA (sem esperar o banco)
+      setTasks(prev =>
+        prev.map(t =>
+          t.id === id
+            ? {
+                ...t,
+                tempo: tempoNum,
+                tempoRestante: tempoNum,
+                timerAtivo: true,
+                esgotado: false
+              }
+            : t
+        )
+      );
     }
   }
-
 
   function toggleTimer(id) {
     setTasks(tasks.map(t => 
@@ -535,10 +567,9 @@ if (!userData?.user) {
       {task.concluida && (
       <button onClick={(e) => {
         e.stopPropagation();
-        concluirTask(task.id);
+        toggleTask(task.id);
       }}>
-        Concluir
-
+        ✔️
       </button>
       )}
 
