@@ -22,6 +22,7 @@ export default function Empresarial() {
   const [historico, setHistorico] = useState([]);
   const [abrirHistorico, setAbrirHistorico] = useState(false);
   const [abrirMenu, setAbrirMenu] = useState(false);
+  
 
   
 
@@ -107,6 +108,13 @@ export default function Empresarial() {
       alert("Tempo tem que ser maior que 0");
       return;
     }
+
+    const { data: userData } = await supabase.auth.getUser();
+
+if (!userData?.user) {
+  alert("Usuário não logado");
+  return;
+}
     
     const { error } = await supabase
     .from('Tarefas')
@@ -119,7 +127,7 @@ export default function Empresarial() {
       concluida: false,
       tempo: tempoNum ?? null,
       tempoRestante: tempoNum ?? null,
-      timerAtivo: tempoNum !== false,
+      timerAtivo: tempoNum !== null,
       esgotado: false,
       user_id: userData.user.id
     }]);
@@ -262,15 +270,23 @@ export default function Empresarial() {
     }
   }
 
-  function clearCompleted() {
-    setTasks(tasks.filter(t => !t.concluida));
+  async function clearCompleted() {
+    await supabase
+      .from('Tarefas')
+      .delete()
+      .eq('concluida', true);
+  
+    buscarTasks();
   }
 
   async function buscarTasks() {
+    const { data: userData } = await supabase.auth.getUser();
+
     const { data, error } = await supabase
-    .from('Tarefas')
-    .select('*')
-    .order('id', { ascending: false });
+      .from('Tarefas')
+      .select('*')
+      .eq('user_id', userData.user.id)
+      .order('id', { ascending: false });
 
     if (error) {
       console.error('ERRO AO BUSCAR:', error);
