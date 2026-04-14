@@ -6,6 +6,7 @@ import { supabase } from "./services/supabase";
 import Login from "./pages/Login";
 import Empresarial from "./pages/Empresarial";
 
+
 export default function App() {
   const [user, setUser] = useState(null);
 
@@ -29,5 +30,5 @@ export default function App() {
     return <Login onLogin={setUser} />;
   }
 
-  return <Empresarial />;
+  return <Home />;
 }

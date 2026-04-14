@@ -1,6 +1,15 @@
 import { useState, useEffect, use } from "react";
 import Empresarial from "./Empresarial";
 import { motion } from "framer-motion";
+import { supabase } from "../services/supabase";
+
+async function handleLogout() {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Erro ao sair:", error);
+  }
+}
 
 
 export default function Home() {
@@ -44,7 +53,11 @@ export default function Home() {
           }}
         >
           ☰
-</button>
+        </button>
+
+        <button onClick={handleLogout}>
+          Sair
+        </button>
 
       </header>
 
