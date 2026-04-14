@@ -229,6 +229,7 @@ if (!userData?.user) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
   
+    
     const sucesso = await deleteTaskSemHistorico(id);
   
     if (!sucesso) return;
@@ -262,15 +263,22 @@ if (!userData?.user) {
       return;
     }
   
+    const { data: userData } = await supabase.auth.getUser();
+  
     const { error } = await supabase
       .from('Tarefas')
       .update({ descricao: nova })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', userData.user.id);
   
     if (error) {
       console.error("Erro ao editar descrição:", error);
     } else {
-      buscarTasks();
+      setTasks(prev =>
+        prev.map(t =>
+          t.id === id ? { ...t, descricao: nova } : t
+        )
+      );
     }
   }
 
@@ -505,7 +513,11 @@ if (!userData?.user) {
   {tarefasFiltradas.map(task => (
     <motion.li
       key={task.id}
-      onClick={() => toggleTask(task.id)}
+      onClick={(e) => {
+        if (e.target.tagName !== "BUTTON") {
+          toggleTask(task.id);
+        }
+      }}
       className={`prioridade-${task.prioridade} 
                   ${task.timerAtivo ? "timer-ativo" : ""} 
                   ${task.concluida ? "feito" : ""}
@@ -567,7 +579,7 @@ if (!userData?.user) {
       {task.concluida && (
       <button onClick={(e) => {
         e.stopPropagation();
-        toggleTask(task.id);
+        concluirTask(task.id)
       }}>
         ✔️
       </button>

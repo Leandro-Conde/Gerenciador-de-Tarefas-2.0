@@ -1,6 +1,29 @@
 import { useState } from "react";
 import { supabase } from "../services/supabase";
 
+const [email, setEmail] = useState("");
+const [senha, setSenha] = useState("");
+const [loading, setLoading] = useState(false);
+const [erro, setErro] = useState("");
+
+async function handleLogin(e) {
+    e.preventDefault();
+    setLoading(true);
+    setErro("");
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha
+    });
+
+    if (error) {
+        setErro("Email ou senha inválidos");
+    }
+
+    setLoading(false);
+}
+
+
 export default function Login({ onLogin }) {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
@@ -22,22 +45,28 @@ export default function Login({ onLogin }) {
     }
 
     return (
-        <div>
-            <h2>Login</h2>
+        <form onSubmit={handleLogin} className="login-box">
+        <h2>Login</h2>
 
-            <form onSubmit={handleLogin}>
-                <input type="email" 
-                placeholder="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)} />
-            
-            <input type="password" 
-                placeholder="Senha"
-                value={senha}
-                onChange={e => setSenha(e.target.value)} />
+        <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+        />
 
-            <button type="submit">Entrar</button>
-            </form>
-        </div>
+        <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={e => setSenha(e.target.value)}
+        />
+
+        <button type="submit" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
+        </button>
+
+        {erro && <p className="erro">{erro}</p>}
+        </form>
     );
 }

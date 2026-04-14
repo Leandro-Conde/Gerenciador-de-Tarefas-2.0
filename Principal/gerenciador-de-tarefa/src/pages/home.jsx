@@ -42,7 +42,7 @@ export default function Home() {
         <h1>Gerenciamento de Tarefas</h1>
 
         <button onClick={() => setDark(!dark)}>
-          {dark ? "Claro" : "Escuro"}
+          {dark ? "🌗" : "🌗"}
         </button>
 
         <button 
