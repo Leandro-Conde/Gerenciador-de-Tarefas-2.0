@@ -1,72 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../services/supabase";
 
-const [email, setEmail] = useState("");
-const [senha, setSenha] = useState("");
-const [loading, setLoading] = useState(false);
-const [erro, setErro] = useState("");
+export default function Login({ onLogin, irParaCadastro }) {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
 
-async function handleLogin(e) {
+  useEffect(() => {
+    document.body.classList.add("login-page");
+  
+    return () => {
+      document.body.classList.remove("login-page");
+    };
+  }, []);
+
+  async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
     setErro("");
 
     const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password: senha
+      email,
+      password: senha
     });
 
     if (error) {
-        setErro("Email ou senha inválidos");
+      setErro("Email ou senha inválidos");
+      setLoading(false);
+      return;
     }
 
+    onLogin(data.user);
     setLoading(false);
-}
 
+  }
 
-export default function Login({ onLogin }) {
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
+  return (
+    <form onSubmit={handleLogin} className="login-box">
+      <h2>Login de acesso</h2>
 
-    async function handleLogin(e) {
-        e.preventDefault();
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password: senha
-        });
+      <input
+        type="password"
+        placeholder="Senha"
+        value={senha}
+        onChange={e => setSenha(e.target.value)}
+      />
 
-        if (error) {
-            alert("Erro no login, tente novamente");
-            console.error(error);
-        } else {
-            onLogin(data.user);
-        }
-    }
+      <button type="submit" disabled={loading}>
+        {loading ? "Entrando..." : "Entrar"}
+      </button>
 
-    return (
-        <form onSubmit={handleLogin} className="login-box">
-        <h2>Login</h2>
-
-        <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-        />
-
-        <input
-            type="password"
-            placeholder="Senha"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-        />
-
-        <button type="submit" disabled={loading}>
-            {loading ? "Entrando..." : "Entrar"}
+      <button 
+        type="button" 
+        onClick={irParaCadastro}
+        className="btn-secundario"
+        >
+        Criar conta
         </button>
 
-        {erro && <p className="erro">{erro}</p>}
-        </form>
-    );
+      {erro && <p className="erro">{erro}</p>}
+    </form>
+  );
 }

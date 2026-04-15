@@ -8,9 +8,9 @@
 
 :root {
     --bg: #f5f5f5;
-    --text: #1a1a1a;
+    --text: #ffffff;
     --fundo-card: #c42149;
-    --letra-um: #1a1a1a;
+    --letra-um: #000000;
     --letra-dois: #ffffff;
     --botao: #721347;
     --card: #ffffff;
@@ -30,32 +30,88 @@
     content: '🌗';
 }
 
+body.login-page {
+    position: relative;
+    background: url("./img/tela-login.png") no-repeat center;
+    background-size: cover;
+    color: var(--text);
+}
+
+body.login-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.082); /* escurece um pouco */
+
+    z-index: 0;
+}
+
 .login-box {
+    position: relative;
+    z-index: 1;
+
     max-width: 400px;
     margin: 100px auto;
     padding: 30px;
-    border-radius: 12px;
-    background: #1e1e1e;
+
+    border-radius: 16px;
+
+    /* vidro */
+    background: rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    border: 1px solid rgba(255, 0, 0, 0.2);
+
+    /* brilho */
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 0 10px rgba(255,255,255,0.05);
+
     color: white;
+
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+}
+
+
+  .login-box h2 {
+    text-align: center;
   }
   
   .login-box input {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+
     padding: 10px;
-    border-radius: 6px;
-    border: none;
-  }
+    border-radius: 8px;
+    text-align: center;
+}
+
+.login-box input::placeholder {
+    color: rgba(255,255,255,0.6);
+}
   
   .login-box button {
-    padding: 10px;
+    background: linear-gradient(135deg, #721347, #c42149);
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #4caf50;
+    border-radius: 8px;
     color: white;
-  }
+
+    padding: 10px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.login-box button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
   
   .erro {
     color: red;
@@ -474,6 +530,7 @@ footer {
 }
 
 @media (min-width:768px) {
+
     .container {
         display: grid;
         grid-template-columns: 1fr 2fr;
@@ -570,7 +627,6 @@ footer {
 
   @media (min-width: 1024px) {
 
-
     .descricao {
       position: absolute;
 
@@ -623,7 +679,7 @@ footer {
     }
 
     main {
-        background-color: rgb(168, 37, 44);
+        background-color: rgba(29, 5, 5, 0.411);
         border-radius: 20px;
         box-shadow: 2px 2px rgba(0, 0, 0, 0.555);
     

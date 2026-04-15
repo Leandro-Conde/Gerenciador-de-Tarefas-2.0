@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
 import Calendar from "../components/Calendar";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from '../services/supabase'
+import { useState, useEffect, useRef } from "react";
 
 
 export default function Empresarial() {
@@ -22,9 +22,25 @@ export default function Empresarial() {
   const [historico, setHistorico] = useState([]);
   const [abrirHistorico, setAbrirHistorico] = useState(false);
   const [abrirMenu, setAbrirMenu] = useState(false);
-  
+  const historicoRef = useRef(null);
 
   
+  useEffect(() => {
+    function handleClickFora(event) {
+      if (
+        historicoRef.current &&
+        !historicoRef.current.contains(event.target)
+      ) {
+        setAbrirHistorico(false);
+      }
+    }
+  
+    document.addEventListener("mousedown", handleClickFora);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickFora);
+    };
+  }, []);
 
   useEffect(() => {
     buscarTasks(); //supabase
@@ -417,7 +433,8 @@ if (!userData?.user) {
 
       
     <div className="layout">
-    <aside className={`historico ${abrirHistorico ? "ativo" : ""}`}>
+    <aside ref={historicoRef}
+    className={`historico ${abrirHistorico ? "ativo" : ""}`}>
 
      <h3>Histórico</h3>
 
