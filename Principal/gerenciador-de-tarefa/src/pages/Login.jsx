@@ -6,6 +6,7 @@ export default function Login({ onLogin, irParaCadastro }) {
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   useEffect(() => {
     document.body.classList.add("login-page");
@@ -47,12 +48,22 @@ export default function Login({ onLogin, irParaCadastro }) {
         onChange={e => setEmail(e.target.value)}
       />
 
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={e => setSenha(e.target.value)}
-      />
+<div className="input-senha">
+  <input
+    type={mostrarSenha ? "text" : "password"}
+    placeholder="Senha"
+    value={senha}
+    onChange={e => setSenha(e.target.value)}
+  />
+
+  <button
+    type="button"
+    onClick={() => setMostrarSenha(prev => !prev)}
+    className="eye-btn"
+  >
+    {mostrarSenha ? "🙈" : "👁️"}
+  </button>
+</div>
 
       <button type="submit" disabled={loading}>
         {loading ? "Entrando..." : "Entrar"}
