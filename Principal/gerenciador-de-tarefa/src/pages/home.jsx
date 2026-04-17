@@ -1,14 +1,39 @@
 import { useState, useEffect } from "react";
+import { supabase } from "../services/supabase";
 import Login from "./Login";
 import Registro from "./Registro";
 import Empresarial from "./Empresarial";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("login");
 
   const [dark, setDark] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
 
+  // sessão persistente
+  useEffect(() => {
+    async function getSession() {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+      setLoading(false);
+    }
+
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  // tema
   useEffect(() => {
     const tema = localStorage.getItem("tema");
     if (tema === "dark") setDark(true);
@@ -24,18 +49,20 @@ export default function Home() {
     }
   }, [dark]);
 
-  // LOGIN
-  if (tela === "login") {
-    return (
-      <Login
-        onLogin={() => setTela("logado")}
-        irParaCadastro={() => setTela("registro")}
-      />
-    );
-  }
+  // loading inicial
+  if (loading) return <p>Carregando...</p>;
 
-  // REGISTRO
-  if (tela === "registro") {
+  // NÃO LOGADO
+  if (!user) {
+    if (tela === "login") {
+      return (
+        <Login
+          onLogin={(user) => setUser(user)}
+          irParaCadastro={() => setTela("registro")}
+        />
+      );
+    }
+
     return (
       <Registro
         onRegistro={() => setTela("login")}
@@ -44,7 +71,12 @@ export default function Home() {
     );
   }
 
-  // 
+  // LOGADO
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setUser(null);
+  }
+
   return (
     <>
       <header className="head">
@@ -56,18 +88,14 @@ export default function Home() {
           ☰
         </button>
 
-        <button onClick={() => setTela("login")}>
-          Sair
-        </button>
+        <button onClick={handleLogout}>Sair</button>
       </header>
 
-      {/* overlay */}
       <div
         className={`overlay ${menuAberto ? "ativo" : ""}`}
         onClick={() => setMenuAberto(false)}
       />
 
-      {/* sidebar */}
       <aside className={`sidebar ${menuAberto ? "ativo" : ""}`}>
         <button onClick={() => setMenuAberto(false)}>
           Empresarial
