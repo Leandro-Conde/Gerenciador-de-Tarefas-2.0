@@ -7,6 +7,8 @@ import Login from "./pages/Login";
 import Empresarial from "./pages/Empresarial";
 
 
+const [tela, setTela] = useState("login");
+
 export default function App() {
   const [user, setUser] = useState(null);
 
