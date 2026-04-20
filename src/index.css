@@ -365,11 +365,6 @@ li {
     transform: scale(1.05);
   }
 
-button:has(span), 
-button:contains("📜") {
-    transition: all 0.3s ease;
-}
-
 button:hover {
     letter-spacing: 1px;
 }

@@ -1,13 +1,6 @@
-//import { useState } from 'react'
-import Home from "./pages/Home";
-import './App.css';
 import { useEffect, useState } from "react";
+import Home from "./pages/Home";
 import { supabase } from "./services/supabase";
-import Login from "./pages/Login";
-import Empresarial from "./pages/Empresarial";
-
-
-const [tela, setTela] = useState("login");
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -28,9 +21,5 @@ export default function App() {
     };
   }, []);
 
-  if (!user) {
-    return <Login onLogin={setUser} />;
-  }
-
-  return <Home />;
+  return <Home user={user} setUser={setUser} />;
 }

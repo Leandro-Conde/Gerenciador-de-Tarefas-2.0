@@ -4,8 +4,8 @@ import Login from "./Login";
 import Registro from "./Registro";
 import Empresarial from "./Empresarial";
 
-export default function Home() {
-  const [user, setUser] = useState(null);
+export default function Home({ user, setUser }) {
+
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("login");
 
