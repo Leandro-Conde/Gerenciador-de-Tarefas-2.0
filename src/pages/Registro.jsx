@@ -21,26 +21,36 @@ export default function Registro({ onRegistro, voltarLogin }) {
     e.preventDefault();
     setLoading(true);
     setErro("");
-
+  
     if (senha !== confirmarSenha) {
       setErro("As senhas não coincidem");
       setLoading(false);
       return;
     }
-
+  
+    // chama o Supabase
     const { data, error } = await supabase.auth.signUp({
       email,
       password: senha
     });
-
+  
+    console.log("SUPABASE:", { data, error });
+  
+    // ERRO
     if (error) {
       setErro(error.message);
       setLoading(false);
       return;
     }
-
-    onRegistro(data.user);
+  
+    // SUCESSO
+    setErro("Conta criada com sucesso!");
+  
     setLoading(false);
+  
+    setTimeout(() => {
+      voltarLogin(); //MUDA PRA TELA DE LOGIN
+    }, 1500);
   }
 
   return (

@@ -65,7 +65,6 @@ export default function Home() {
 
     return (
       <Registro
-        onRegistro={() => setTela("login")}
         voltarLogin={() => setTela("login")}
       />
     );
