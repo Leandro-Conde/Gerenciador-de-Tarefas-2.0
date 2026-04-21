@@ -654,6 +654,12 @@ footer {
 
   }
 
+  @media (max-width: 900px) {
+    .conteudo {
+        grid-template-columns: 1fr;
+    }
+}
+
   @media (min-width: 1024px) {
 
     .descricao {
@@ -708,14 +714,14 @@ footer {
     }
 
     main {
-        background-color: rgba(29, 5, 5, 0.411);
-        border-radius: 20px;
-        
-    
-        width: 50vw;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+    background-color: rgba(29, 5, 5, 0.411);
+    border-radius: 20px;
+
+    width: 100%;
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+}
     
     .conteudo {
     background: rgba(20, 17, 17, 0);
@@ -725,7 +731,7 @@ footer {
 
     width: 100%;
     max-width: 1000px; /* controla largura */
-    margin: 0 auto; /* 👈 centraliza */
+    margin: 0 auto; /* centraliza */
 }
      
 
