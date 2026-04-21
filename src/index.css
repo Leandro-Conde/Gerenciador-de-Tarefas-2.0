@@ -654,12 +654,6 @@ footer {
 
   }
 
-  @media (max-width: 900px) {
-    .conteudo {
-        grid-template-columns: 1fr;
-    }
-}
-
   @media (min-width: 1024px) {
 
     .descricao {
@@ -732,8 +726,10 @@ footer {
     width: 100%;
     max-width: 1000px; /* controla largura */
     margin: 0 auto; /* centraliza */
-}
-     
+} 
+     main {
+        width: 1000px;
+     }     
 
     .area-inferior ul {
         grid-column: 1;
@@ -798,4 +794,16 @@ footer {
         padding-top: 850px;
     }
 
+  }
+
+  /* MOBILE FORÇADO (quebra brusca) */
+@media (max-width: 1023px) {
+    .conteudo {
+      display: flex;
+      flex-direction: column;
+    }
+  
+    main {
+      width: 100%;
+    }
   }

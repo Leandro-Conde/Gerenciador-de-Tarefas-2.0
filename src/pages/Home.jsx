@@ -8,6 +8,7 @@ export default function Home({ user, setUser }) {
 
   const [loading, setLoading] = useState(true);
   const [tela, setTela] = useState("login");
+  
 
   const [dark, setDark] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
