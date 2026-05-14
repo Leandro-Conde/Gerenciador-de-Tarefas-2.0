@@ -506,6 +506,9 @@ if (!userData?.user) {
           <option value="suporte">Suporte</option>
           <option value="financeiro">Financeiro</option>
           <option value="design">Design</option>
+          <option value="notasFiscais">Notas Fiscais</option>
+          <option value="homologaçãoBancaria">Homologação Bancaria</option>
+          <option value="treinamentos">Treinamentos</option>
         </select>
 
 
