@@ -492,7 +492,7 @@ if (!userData?.user) {
         type="text"
         value={empresa}
         onChange={e => setEmpresa(e.target.value)}
-        placeholder="Nome da empresa (Obrigatório)"
+        placeholder="Nome da empresa (Obrigatório!)"
         />
 
         <input
