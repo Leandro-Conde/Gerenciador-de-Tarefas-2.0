@@ -497,7 +497,7 @@ if (!userData?.user) {
 
         <input
           type="number"
-          placeholder="Tempo (segundos) (ex: 3600 = 1 hora)"
+          placeholder="Tempo (segundos) (ex: 3600s = 1 hora)"
           value={tempoInput}
           onChange={e => setTempoInput(e.target.value)}
           />
