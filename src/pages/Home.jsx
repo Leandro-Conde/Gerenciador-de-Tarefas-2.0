@@ -82,6 +82,8 @@ export default function Home({ user, setUser }) {
       <header className="head">
         <h1>Gerenciamento de Tarefas</h1>
 
+        <h2 className="versao-software"> Gerenciador de Tarefas v1.0.0</h2>
+
         <button onClick={() => setDark(!dark)}>🌗</button>
 
         <button onClick={() => setMenuAberto(prev => !prev)}>

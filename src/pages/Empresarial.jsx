@@ -242,22 +242,23 @@ if (!userData?.user) {
   }
 
   async function concluirTask(id) {
-    const task = tasks.find(t => t.id === id);
-    if (!task) return;
+
+    const { data: userData } =
+      await supabase.auth.getUser();
   
+    const { error } = await supabase
+      .from("Tarefas")
+      .update({
+        concluida: true
+      })
+      .eq("id", id)
     
-    const sucesso = await deleteTaskSemHistorico(id);
   
-    if (!sucesso) return;
-  
-    setHistorico(h => [
-      ...h,
-      {
-        ...task,
-        status: "concluida",
-        dataAcao: new Date()
-      }
-    ]);
+    if (error) {
+      console.error("Erro ao concluir:", error);
+      alert(JSON.stringify(error));
+      return;
+    }
   
     buscarTasks();
   }
@@ -298,18 +299,42 @@ if (!userData?.user) {
     }
   }
 
+
   async function editTask(id) {
-    const novo = prompt("Novo título:");
-    if (!novo) return;
+
+    console.log("ID RECEBIDO:", id);
+  
+    const task = tasks.find(t => t.id === id);
+  
+    console.log("TASK ENCONTRADA:", task);
+  
+    if (!task) return;
+  
+    const novoTitulo = prompt(
+      "Novo título:",
+      task.titulo
+    );
+  
+    const novaData = prompt(
+      "Nova data (AAAA-MM-DD):",
+      task.data
+    );
+  
+    const { data: userData } = await supabase.auth.getUser();
   
     const { error } = await supabase
-      .from('Tarefas')
-      .update({ titulo: novo })
-      .eq('id', id);
+  .from("Tarefas")
+  .update({
+    titulo: novoTitulo || task.titulo,
+    data: novaData || task.data
+  })
+  .eq("id", id);
   
     if (error) {
-      console.error("Erro ao editar título:", error);
+      console.error("ERRO UPDATE:", error);
+      alert(JSON.stringify(error));
     } else {
+      alert("Atualizado!");
       buscarTasks();
     }
   }
@@ -426,6 +451,13 @@ if (!userData?.user) {
     ));
   }
   
+  function formatarData(data) {
+    if (!data) return "sem data";
+  
+    const [ano, mes, dia] = data.split("-");
+  
+    return `${dia}/${mes}/${ano}`;
+  }
 
   return (
     <>
@@ -460,7 +492,7 @@ if (!userData?.user) {
 
               {item.data && (
                 <p>
-                  Criada em: {new Date(item.data).toLocaleDateString("pt-BR")}
+                  Criada em: {formatarData(item.data)}
                 </p>
               )}
 
@@ -548,8 +580,7 @@ if (!userData?.user) {
     >
       <strong>{task.titulo}</strong>
 
-      <p>{task.data ? new Date(task.data).toLocaleDateString("pt-BR")
-      : "sem data"}</p>
+      <p>{formatarData(task.data)}</p>
 
       <span>{task.empresa} | {task.tipo}</span>
 
