@@ -461,7 +461,7 @@ if (!userData?.user) {
 
   return (
     <>
-      <h2>Empresarial</h2>
+      <h2>Controle Empresarial</h2>
 
       
     <div className="layout">
