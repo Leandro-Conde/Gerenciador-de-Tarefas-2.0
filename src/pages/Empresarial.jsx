@@ -243,6 +243,8 @@ if (!userData?.user) {
 
   async function concluirTask(id) {
 
+    console.log("CLIQUEI NO CONCLUIR", id);
+
     const { data: userData } =
       await supabase.auth.getUser();
   
@@ -628,13 +630,15 @@ if (!userData?.user) {
       </button>
 
       {task.concluida && (
-      <button onClick={(e) => {
-        e.stopPropagation();
-        concluirTask(task.id)
-      }}>
-        ✔️
-      </button>
-      )}
+  <button
+    onClick={() => {
+      alert("BOTAO CLICADO");
+      concluirTask(task.id);
+    }}
+  >
+    ✔️
+  </button>
+)}
 
         <button
           className="btn-descricao"
